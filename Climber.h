@@ -27,7 +27,7 @@ public:
     // Robot MUST already be tilted
     void StartClimb();
 
-    ClimberState ClimberState();
+    ClimberState GetClimberState();
 
     // Turns off all motors controlled by this class
     void Disable();
@@ -41,7 +41,7 @@ private:
 
 	bool initialized;
     ClimberState CS;
-    UINT8 leftLiftPort, rightLiftPort, leftEncPort, rightencPort, flopDownPort;
+    UINT8 leftLiftPort, rightLiftPort, leftEncPort, rightEncPort, flopDownPort;
     CANJaguar leftLift, rightLift;
     SettableCounter leftEnc, rightEnc;
 

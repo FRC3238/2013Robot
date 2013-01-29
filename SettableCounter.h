@@ -9,6 +9,17 @@
  */
 class SettableCounter : Counter {
 public:
+
+	SettableCounter() : Counter() {}
+	explicit SettableCounter(UINT32 channel) : Counter(channel) {}
+	SettableCounter(UINT8 moduleNumber, UINT32 channel) : Counter(moduleNumber, channel) {}
+	explicit SettableCounter(DigitalSource *source) : Counter(source) {}
+	explicit SettableCounter(DigitalSource &source) : Counter(source) {}
+	explicit SettableCounter(AnalogTrigger *trigger) : Counter(trigger) {}
+	explicit SettableCounter(AnalogTrigger &trigger) : Counter(trigger) {}
+	SettableCounter(EncodingType encodingType, DigitalSource *upSource, DigitalSource *downSource, bool inverted) : Counter(encodingType, upSource, downSource, inverted) {}
+	virtual ~SettableCounter() {}
+
     INT32 Get() {
         return Counter::Get() - offset;
     }

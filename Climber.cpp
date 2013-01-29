@@ -8,10 +8,10 @@ using namespace ClimberTunables;
 // Add code to differentiate between "done" and "disabled" for victory lights, etc
 // Put PID loop in to make both sides run same speed
 
-Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT8 leftEncIn, UINT8 rightEncIn, UINT8 flopdownIn) : 
-    initialized(false), climbing(false),
+Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT8 leftEncIn, UINT8 rightEncIn, UINT8 flopDownIn) : 
+    initialized(false),
     leftLiftPort(leftLiftIn), rightLiftPort(rightLiftIn),
-    leftEncPort(leftEncIn), rightEncPort(rightEncIn)
+    leftEncPort(leftEncIn), rightEncPort(rightEncIn),
     flopDownPort(flopDownIn),
     leftLift(leftLiftPort), rightLift(rightLiftPort),
     leftEnc(leftEncPort), rightEnc(rightEncPort)
@@ -26,10 +26,10 @@ bool Climber::Init() {
 
 void Climber::StartClimb() {
     // All work done in Idle()
-    climbing = TILTED;
+    CS = TILTED;
 }
 
-ClimberState Climber::ClimberState() {
+Climber::ClimberState Climber::GetClimberState() {
     return CS;
 }
 
@@ -69,7 +69,7 @@ void Climber::AutoLift() {
         CS = DEPLOYED;
     case DEPLOYED:
         // ??? Line up further? Wait for driver signal?
-        CS = LEV0;
+        CS = C1;
     case C1:
         if (lEncD > TicksPerSweep && rEncD > TicksPerSweep) {
              leftEnc.IncreaseOffset(TicksPerSweep);
