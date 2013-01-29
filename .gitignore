@@ -5,3 +5,8 @@
 *.o
 # vim temporary files
 *.swp
+# Specific build files
+.ucpp
+.wrmakefile
+Makefile
+PPC603gnu
