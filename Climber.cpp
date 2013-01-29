@@ -60,7 +60,7 @@ void Climber::AutoLift() {
      */
 
     INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
-    float liftSpd; 
+    static float liftSpd = 0.0;
     switch(CS) {
     case DEACTIVATED:
         break;
@@ -69,54 +69,16 @@ void Climber::AutoLift() {
         CS = DEPLOYED;
     case DEPLOYED:
         // ??? Line up further? Wait for driver signal?
+        liftSpd = 1.0;
         CS = C1;
-    case C1:
+    case C1: case C2: case C3: case C4: case C5: case C6: 
         if (lEncD > TicksPerSweep && rEncD > TicksPerSweep) {
              leftEnc.IncreaseOffset(TicksPerSweep);
             rightEnc.IncreaseOffset(TicksPerSweep);
-            CS = C2;
+            CS = (ClimberState)(CS + 1);
+            if (CS > C6) CS = DEACTIVATED;
+            liftSpd = -liftSpd;
         }
-        liftSpd = 1.0;
-        break;
-    case C2:
-        if (lEncD > TicksPerSweep && rEncD > TicksPerSweep) {
-             leftEnc.IncreaseOffset(TicksPerSweep);
-            rightEnc.IncreaseOffset(TicksPerSweep);
-            CS = C3;
-        }
-        liftSpd = -1.0;
-        break;
-    case C3:
-        if (lEncD > TicksPerSweep && rEncD > TicksPerSweep) {
-             leftEnc.IncreaseOffset(TicksPerSweep);
-            rightEnc.IncreaseOffset(TicksPerSweep);
-            CS = C4;
-        }
-        liftSpd = 1.0;
-        break;
-    case C4:
-        if (lEncD > TicksPerSweep && rEncD > TicksPerSweep) {
-             leftEnc.IncreaseOffset(TicksPerSweep);
-            rightEnc.IncreaseOffset(TicksPerSweep);
-            CS = C5;
-        }
-        liftSpd = -1.0;
-        break;
-    case C5:
-        if (lEncD > TicksPerSweep && rEncD > TicksPerSweep) {
-             leftEnc.IncreaseOffset(TicksPerSweep);
-            rightEnc.IncreaseOffset(TicksPerSweep);
-            CS = C6;
-        }
-        liftSpd = 1.0;
-        break;
-    case C6:
-        if (lEncD > TicksAtEnd && rEncD > TicksAtEnd) {
-             leftEnc.IncreaseOffset(TicksAtEnd);
-            rightEnc.IncreaseOffset(TicksAtEnd);
-            CS = DEACTIVATED;
-        }
-        liftSpd = -1.0;
         break;
     }
     double adj = syncP * (lEncD - rEncD);
