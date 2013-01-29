@@ -3,3 +3,5 @@
 
 # Means ignore everything ending with '.o'
 *.o
+# vim temporary files
+*.swp
