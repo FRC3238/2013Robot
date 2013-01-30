@@ -16,11 +16,15 @@
 // Jaguar CAN IDs
 #if ROBOT == real
 const UINT8 ChassisLeftMtr = 1;
+const UINT8 ClimberLeftMtr = 2;
 const UINT8 ChassisRightMtr = 3;
+const UINT8 ClimberRightMtr = 4;
 #endif
 
 // GPIO Ports
 #if ROBOT == real
+const UINT32 ClimberLeftEncoder = 1;
+const UINT32 ClimberRightEncoder = 2;
 const UINT32 LeftEncoderPortA = 3;
 const UINT32 LeftEncoderPortB = 4;
 const UINT32 RightEncoderPortA = 5;

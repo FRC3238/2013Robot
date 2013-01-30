@@ -3,6 +3,7 @@
 
 #include <WPILib.h>
 #include "Chassis.h"
+#include "Climber.h"
 
 class robot3238 : public IterativeRobot {
 
@@ -19,6 +20,7 @@ public:
 
 private:
 	Chassis *theChassis;
+    Climber *theClimber;
 	Joystick *driveJoystick;
 	DriverStation *DS;
 	DriverStationEnhancedIO &DSEIO;

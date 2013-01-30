@@ -3,30 +3,44 @@ using namespace ClimberTunables;
 
 // TODO: Add code for flopper (servo?)
 // TODO: Add code for driver override
-// TODO: Test, tune ClimberTunables
+// TODO: Test, tune tunables
 // Find sensor that can act as encoder
 // Add code to differentiate between "done" and "disabled" for victory lights, etc
 // Put PID loop in to make both sides run same speed
 
-Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT8 leftEncIn, UINT8 rightEncIn, UINT8 flopDownIn) : 
+Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 rightEncIn, UINT8 flopDownIn) : 
     initialized(false),
+    CS(DEACTIVATED),
     leftLiftPort(leftLiftIn), rightLiftPort(rightLiftIn),
-    leftEncPort(leftEncIn), rightEncPort(rightEncIn),
     flopDownPort(flopDownIn),
+    leftEncPort(leftEncIn), rightEncPort(rightEncIn),
     leftLift(leftLiftPort), rightLift(rightLiftPort),
     leftEnc(leftEncPort), rightEnc(rightEncPort)
     {
+
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2,"cons L % 5ld R % 5ld", lEncD, rEncD);
+
+    // Set initial values for tunables
+    syncP = 0.05;
+    TicksPerSweep = 5;
+    TicksAtEnd = 50;
+    leftMtrFactor = 0.5, rightMtrFactor = 0.5;
     
 }
 
 bool Climber::Init() {
     initialized = true;
+     leftEnc.Start();
+    rightEnc.Start();
+     leftEnc.Reset();
+    rightEnc.Reset();
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3,"init L % 5ld R % 5ld", lEncD, rEncD);
     return initialized;
 }
 
 void Climber::StartClimb() {
     // All work done in Idle()
-    CS = TILTED;
+    if (CS == DEACTIVATED) CS = TILTED;
 }
 
 Climber::ClimberState Climber::GetClimberState() {
@@ -60,11 +74,14 @@ void Climber::AutoLift() {
      */
 
     INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1,"L % 5ld R % 5ld", lEncD, rEncD);
     static float liftSpd = 0.0;
     switch(CS) {
     case DEACTIVATED:
+        liftSpd = 0;
         break;
     case TILTED:
+        liftSpd = 0;
         // deploy
         CS = DEPLOYED;
     case DEPLOYED:

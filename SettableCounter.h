@@ -7,17 +7,17 @@
  *  value rather than having to be reset completely.
  * Useful in the Climber class
  */
-class SettableCounter : Counter {
+class SettableCounter : public Counter {
 public:
 
-	SettableCounter() : Counter() {}
-	explicit SettableCounter(UINT32 channel) : Counter(channel) {}
-	SettableCounter(UINT8 moduleNumber, UINT32 channel) : Counter(moduleNumber, channel) {}
-	explicit SettableCounter(DigitalSource *source) : Counter(source) {}
-	explicit SettableCounter(DigitalSource &source) : Counter(source) {}
-	explicit SettableCounter(AnalogTrigger *trigger) : Counter(trigger) {}
-	explicit SettableCounter(AnalogTrigger &trigger) : Counter(trigger) {}
-	SettableCounter(EncodingType encodingType, DigitalSource *upSource, DigitalSource *downSource, bool inverted) : Counter(encodingType, upSource, downSource, inverted) {}
+	SettableCounter() : offset(0), Counter() {}
+	explicit SettableCounter(UINT32 channel) : offset(0), Counter(channel) {}
+	SettableCounter(UINT8 moduleNumber, UINT32 channel) : offset(0), Counter(moduleNumber, channel) {}
+	explicit SettableCounter(DigitalSource *source) : offset(0), Counter(source) {}
+	explicit SettableCounter(DigitalSource &source) : offset(0), Counter(source) {}
+	explicit SettableCounter(AnalogTrigger *trigger) : offset(0), Counter(trigger) {}
+	explicit SettableCounter(AnalogTrigger &trigger) : offset(0), Counter(trigger) {}
+	SettableCounter(EncodingType encodingType, DigitalSource *upSource, DigitalSource *downSource, bool inverted) : offset(0), Counter(encodingType, upSource, downSource, inverted) {}
 	virtual ~SettableCounter() {}
 
     INT32 Get() {

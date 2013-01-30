@@ -5,11 +5,13 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 	
 	driveJoystick = new Joystick (DriveJoystickPort);
 	theChassis = new Chassis(ChassisLeftMtr,ChassisRightMtr);
+    theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, -1);
 }
 	
 	void robot3238::RobotInit(void) {
 		
 		theChassis->Init();
+        theClimber->Init();
 		SmartDashboard::init();
 		printf("RobotInit() Completed\n");
 	}
@@ -59,6 +61,11 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 	    if(driveJoystick->GetRawButton(7) == 1){
 	    	theChassis->ResetEncoders();
 	    }
+	    if(driveJoystick->GetRawButton(8) == 1){
+            theClimber->StartClimb();
+        }
+        theClimber->Idle();
+        DriverStationLCD::GetInstance()->UpdateLCD();
 	}
 	
 	void robot3238::AutonomousContinuous(void){
