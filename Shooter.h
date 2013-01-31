@@ -17,6 +17,8 @@ public:
     
     void StartShooter();
     
+    void StopShooter();
+    
     void Tilt(float angle);
     
     bool IsTiltSet();
@@ -36,6 +38,10 @@ public:
 private:
     // Put useful functions and variables here
 	bool Initialized;
+	bool StartingShooter;
+	CANJaguar *shootJag;
+	Relay *tiltRelay;
+	Timer *spoolUpTimer;
 };
 
 #endif
