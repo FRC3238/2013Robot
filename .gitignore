@@ -11,3 +11,6 @@
 Makefile
 PPC603gnu
 .metadata
+.wrproject
+.cproject
+.project
