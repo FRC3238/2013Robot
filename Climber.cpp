@@ -79,7 +79,6 @@ void Climber::AutoLift() {
      */
 
     INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1,"L % 5ld R % 5ld", lEncD, rEncD);
     static float liftSpd = 0.0;
     switch(CS) {
     case DEACTIVATED:
@@ -105,11 +104,11 @@ void Climber::AutoLift() {
     }
     double adj = syncP * (lEncD - rEncD);
     if (liftSpd > 0) {
-         leftLift.Set(liftSpd - adj);
-        rightLift.Set(liftSpd + adj);
+         leftLift.Set( leftMtrFactor*(liftSpd - adj));
+        rightLift.Set(rightMtrFactor*(liftSpd + adj));
     }
     else {
-         leftLift.Set(liftSpd + adj);
-        rightLift.Set(liftSpd - adj);
+         leftLift.Set( leftMtrFactor*(liftSpd + adj));
+        rightLift.Set(rightMtrFactor*(liftSpd - adj));
     }
 }
