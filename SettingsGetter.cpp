@@ -22,11 +22,17 @@ void SettingsGetter::rehash() {
     }
 }
     
-long SettingsGetter::getLong(std::string key, long defaultVal, bool attempttorehash) {
-    return defaultVal;
+long SettingsGetter::getLong(std::string key, long defaultVal) {
+    rehash();
+    std::map<std::string, long>::iterator it = longmap.find(key);
+    if (it == longmap.end()) return defaultVal;
+    return it->second;
 }
-double SettingsGetter::getDouble(std::string key, double defaultVal, bool attempttorehash) {
-    return defaultVal;
+double SettingsGetter::getDouble(std::string key, double defaultVal) {
+    rehash();
+    std::map<std::string, double>::iterator it = doublemap.find(key);
+    if (it == doublemap.end()) return defaultVal;
+    return it->second;
 }
 
-SettingsGetter Settings("settings.txt");
+SettingsGetter Settings("/settings.txt");

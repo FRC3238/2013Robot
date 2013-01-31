@@ -10,8 +10,8 @@ public:
     SettingsGetter(std::string settingsfilenamein);
     // Update the internal map to reread all the chances in the settings file
     void rehash();
-    long getLong(std::string key, long defaultVal= 0, bool attempttorehash = true);
-    double getDouble(std::string key, double defaultVal = 0.0, bool attempttorehash = true);
+    long getLong(std::string key, long defaultVal= 0);
+    double getDouble(std::string key, double defaultVal = 0.0);
 private:
     std::string settingsfilename;
     std::ifstream settingsfile;
