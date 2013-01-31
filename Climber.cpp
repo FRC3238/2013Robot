@@ -1,5 +1,4 @@
 #include "Climber.h"
-using namespace ClimberTunables;
 
 // TODO: Add code for flopper (servo?)
 // TODO: Add code for driver override
@@ -18,11 +17,13 @@ Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 r
     leftEnc(leftEncPort), rightEnc(rightEncPort)
     {
 
+
+    INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2,"cons L % 5ld R % 5ld", lEncD, rEncD);
 
     // Set initial values for tunables
     syncP = 0.05;
-    TicksPerSweep = 5;
+    TicksPerSweep = 200;
     TicksAtEnd = 50;
     leftMtrFactor = 0.5, rightMtrFactor = 0.5;
     
@@ -30,6 +31,8 @@ Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 r
 
 bool Climber::Init() {
     initialized = true;
+
+    INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
      leftEnc.Start();
     rightEnc.Start();
      leftEnc.Reset();
@@ -58,6 +61,8 @@ void Climber::Idle() {
         leftLift.Disable();
         rightLift.Disable();
     }
+    INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
+    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1,"L % 5ld R % 5ld", lEncD, rEncD);
 }
 
 void Climber::AutoLift() {

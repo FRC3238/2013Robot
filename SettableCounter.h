@@ -10,14 +10,14 @@
 class SettableCounter : public Counter {
 public:
 
-	SettableCounter() : offset(0), Counter() {}
-	explicit SettableCounter(UINT32 channel) : offset(0), Counter(channel) {}
-	SettableCounter(UINT8 moduleNumber, UINT32 channel) : offset(0), Counter(moduleNumber, channel) {}
-	explicit SettableCounter(DigitalSource *source) : offset(0), Counter(source) {}
-	explicit SettableCounter(DigitalSource &source) : offset(0), Counter(source) {}
-	explicit SettableCounter(AnalogTrigger *trigger) : offset(0), Counter(trigger) {}
-	explicit SettableCounter(AnalogTrigger &trigger) : offset(0), Counter(trigger) {}
-	SettableCounter(EncodingType encodingType, DigitalSource *upSource, DigitalSource *downSource, bool inverted) : offset(0), Counter(encodingType, upSource, downSource, inverted) {}
+	SettableCounter() : Counter(), offset(0) {}
+	explicit SettableCounter(UINT32 channel) : Counter(channel), offset(0) {}
+	SettableCounter(UINT8 moduleNumber, UINT32 channel) : Counter(moduleNumber, channel), offset(0) {}
+	explicit SettableCounter(DigitalSource *source) : Counter(source), offset(0) {}
+	explicit SettableCounter(DigitalSource &source) : Counter(source), offset(0) {}
+	explicit SettableCounter(AnalogTrigger *trigger) : Counter(trigger), offset(0) {}
+	explicit SettableCounter(AnalogTrigger &trigger) : Counter(trigger), offset(0) {}
+	SettableCounter(EncodingType encodingType, DigitalSource *upSource, DigitalSource *downSource, bool inverted) : Counter(encodingType, upSource, downSource, inverted), offset(0) {}
 	virtual ~SettableCounter() {}
 
     INT32 Get() {
