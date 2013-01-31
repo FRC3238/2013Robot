@@ -12,16 +12,12 @@ void SettingsGetter::rehash() {
         settingsfile >> key >> type >> value;
         // TODO: find errors in string to type conversion better
         if (type == "l" ||  type == "i") {
-            double dval = value.toDouble();
-            if ((longmap::const_iterator itr = longmap.find(key)))
-                *itr = dval;
-            else longmap.insert(key, dval);
+            long dval = atol(value.c_str());
+            longmap[key] = dval;
         }
         else if (type == "d" || type == "f") {
-            long lval = value.toLong();
-            if ((doublemap::const_iterator itr = doublemap.find(key)))
-                *itr = lval;
-            else doublemap.insert(key, lval);
+            double lval = atof(value.c_str());
+            doublemap[key] = lval;
         }
     }
 }
