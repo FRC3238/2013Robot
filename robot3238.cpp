@@ -10,10 +10,12 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 }
 	
 	void robot3238::RobotInit(void) {
-		
+		SmartDashboard::init();
+
 		theChassis->Init();
         theClimber->Init();
-		SmartDashboard::init();
+
+        DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, __DATE__ " " __TIME__);
 		printf("RobotInit() Completed\n");
 	}
 	
@@ -35,12 +37,15 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 	}
 	
 	void robot3238::DisabledPeriodic(void)  {
+        Settings.rehash();
 	
 	    theChassis->Idle();
 	    theChassis->SetBrake();
+        theClimber->Idle();
 	}
 
 	void robot3238::AutonomousPeriodic(void) {
+        Settings.rehash();
 	
 	    theChassis->Idle();
 	    theChassis->SetBrake();
@@ -48,6 +53,7 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 	}
 	
 	void robot3238::TeleopPeriodic(void) {
+        Settings.rehash();
 	
 	    theChassis->Idle();
 	    float forward = -driveJoystick->GetRawAxis(2); //getting forward and backward value from movement joystick
@@ -65,12 +71,6 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 	    if(driveJoystick->GetRawButton(8) == 1){
             theClimber->StartClimb();
         }
-
-        long settingstester1 = Settings.getLong("testl", 6);
-        double settingstester2 = Settings.getDouble("testd", 9.0);
-        double settingstester3 = Settings.getDouble("nonexistant", 3238.32383238);
-        DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::DriverStationLCD::kUser_Line5, "i:%ldf:%.2fn:%f", settingstester1, settingstester2, settingstester3);
-
 
         theClimber->Idle();
         DriverStationLCD::GetInstance()->UpdateLCD();

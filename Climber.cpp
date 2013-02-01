@@ -1,4 +1,5 @@
 #include "Climber.h"
+#include "Settings.h"
 
 // TODO: Add code for flopper (servo?)
 // TODO: Add code for driver override
@@ -17,10 +18,6 @@ Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 r
     leftEnc(leftEncPort), rightEnc(rightEncPort)
     {
 
-
-    INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2,"cons L % 5ld R % 5ld", lEncD, rEncD);
-
     // Set initial values for tunables
     syncP = 0.05;
     TicksPerSweep = 200;
@@ -32,12 +29,10 @@ Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 r
 bool Climber::Init() {
     initialized = true;
 
-    INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
      leftEnc.Start();
     rightEnc.Start();
      leftEnc.Reset();
     rightEnc.Reset();
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3,"init L % 5ld R % 5ld", lEncD, rEncD);
     return initialized;
 }
 
@@ -62,7 +57,14 @@ void Climber::Idle() {
         rightLift.Disable();
     }
     INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
-    DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1,"L % 5ld R % 5ld", lEncD, rEncD);
+    SmartDashboard::PutNumber("Climb_LeftEnc", lEncD);
+    SmartDashboard::PutNumber("Climb_RightEnc", rEncD);
+
+    syncP =          Settings.getDouble("Climb_syncP", syncP, true);
+    TicksPerSweep =  Settings.getLong  ("Climb_TicksPerSweep", TicksPerSweep, true);
+    TicksAtEnd =     Settings.getLong  ("Climb_TicksAtEnd", TicksAtEnd, true);
+    leftMtrFactor =  Settings.getDouble("Climb_leftMtrFactor", leftMtrFactor, true);
+    rightMtrFactor = Settings.getDouble("Climb_rightMtrFactor", rightMtrFactor, true);
 }
 
 void Climber::AutoLift() {

@@ -1,4 +1,5 @@
 #include "Settings.h"
+#include <WPILib.h>
 
 SettingsGetter::SettingsGetter(std::string settingsfilenamein) :
     settingsfilename(settingsfilenamein), settingsfile(settingsfilename.c_str())
@@ -22,17 +23,21 @@ void SettingsGetter::rehash() {
     }
 }
     
-long SettingsGetter::getLong(std::string key, long defaultVal) {
-    rehash();
+long SettingsGetter::getLong(std::string key, long defaultVal, bool printToDashboard) {
+    //rehash();
+    long ret = defaultVal;
     std::map<std::string, long>::iterator it = longmap.find(key);
-    if (it == longmap.end()) return defaultVal;
-    return it->second;
+    if (it != longmap.end()) ret = it->second;
+    if (printToDashboard) SmartDashboard::PutNumber(key, ret);
+    return ret;
 }
-double SettingsGetter::getDouble(std::string key, double defaultVal) {
-    rehash();
+double SettingsGetter::getDouble(std::string key, double defaultVal, bool printToDashboard) {
+    //rehash();
+    double ret = defaultVal;
     std::map<std::string, double>::iterator it = doublemap.find(key);
-    if (it == doublemap.end()) return defaultVal;
-    return it->second;
+    if (it != doublemap.end()) ret = it->second;
+    if (printToDashboard) SmartDashboard::PutNumber(key, ret);
+    return ret;
 }
 
 SettingsGetter Settings("/settings.txt");
