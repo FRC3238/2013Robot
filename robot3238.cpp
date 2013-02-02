@@ -7,6 +7,7 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 	driveJoystick = new Joystick (DriveJoystickPort);
 	theChassis = new Chassis(ChassisLeftMtr,ChassisRightMtr);
     theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, -1);
+    theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
 }
 	
 	void robot3238::RobotInit(void) {
@@ -49,7 +50,6 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 	
 	    theChassis->Idle();
 	    theChassis->SetBrake();
-		theChassis->MoveDistanceTank(60, 60);
 	}
 	
 	void robot3238::TeleopPeriodic(void) {

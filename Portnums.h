@@ -19,6 +19,8 @@ const UINT8 ChassisLeftMtr = 1;
 const UINT8 ClimberLeftMtr = 2;
 const UINT8 ChassisRightMtr = 3;
 const UINT8 ClimberRightMtr = 4;
+const UINT8 CollectorFloorMtr = 5;
+const UINT8 CollectorIrisMtr = 6;
 #endif
 
 // GPIO Ports
@@ -29,15 +31,22 @@ const UINT32 LeftEncoderPortA = 3;
 const UINT32 LeftEncoderPortB = 4;
 const UINT32 RightEncoderPortA = 5;
 const UINT32 RightEncoderPortB = 6;
+const UINT32 FloorCloseSwitchPort = 7;
+const UINT32 FloorOpenSwitchPort = 8;
+const UINT32 BucketSwitchPort = 9;
 #endif
 
 // Relay Ports
 #if ROBOT == real
+const UINT32 FloorMotorRelay = 1;
 #endif
 
 // PWM Ports (Servo AND PWM Jaguars)
 #if ROBOT == real
 const UINT32 ShooterServoPort = 1;
+const UINT32 IrisServoRightPort = 2;
+const UINT32 IrisServoLeftPort = 3;
+const UINT32 LipServo = 4;
 #endif
 
 // I2C Addresses
