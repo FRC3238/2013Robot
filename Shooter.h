@@ -43,11 +43,12 @@ private:
     // Put useful functions and variables here
 	bool Initialized;
 	bool StartingShooter;
-	float Angle;
-	int motorDirection;
-	float currentAngle;
 	bool shooting;
+	int motorDirection;
+	float Angle;
+	float currentAngle;
 	float totalSpoolUpTime;
+	float tiltStopDistance;
 	CANJaguar *shootJag;
 	CANJaguar *tiltJag;
 	Timer *spoolUpTimer;

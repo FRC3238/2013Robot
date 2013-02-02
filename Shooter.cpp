@@ -2,6 +2,7 @@
 #include "Portnums.h"
 #include <cmath>
 float totalSpoolUpTime = 3.0;
+float tiltStopDistance = 1.0;
 
 Shooter::Shooter(int shootIn, int tiltIn){
 	
@@ -30,20 +31,19 @@ void Shooter::StopShooter(){
 } 
 
 void Shooter::SetAngle(float desiredAngle){
-	// scale angles to match
+	//Scale angles to match
 	currentAngle = GetAngle();
-	if(desiredAngle < currentAngle){
+	if(desiredAngle < currentAngle){ //Finds which direction the tilt motor needs to run
 		motorDirection = -1;
 	}
 	else{
 		motorDirection = 1;
 	}
-	if(abs(desiredAngle - currentAngle) < 1.0){ // Make this a constant or something
+	if(abs(desiredAngle - currentAngle) < tiltStopDistance){ //Determines when to stop the motor based on the "slop" value
 		tiltJag->Set(0);
 	}
 	else{
 		tiltJag->Set(1*motorDirection);
-		// set some state to say we're running angle motor.
 	}
 }
 
@@ -54,7 +54,7 @@ void Shooter::Shoot(){
 
 float Shooter::GetAngle(){
 	Angle = anglePot->GetAverageVoltage();
-	// might be a good place for a mapper?
+	//Place mapper in this function
 	return Angle;
 }
 
@@ -73,14 +73,15 @@ void Shooter::Idle(){
 		}
 		else{
 			spoolUpTimer->Stop();
-			shootJag->Set(1.0); // Constant
+			shootJag->Set(1.0);
 		}
 	}
-	if(0.0 < shootTime < 3.0){
-		shootServo->Set(40); // didn't you already set this?
+	if(0.0 < shootTime < 3.0){ //The timing for the servo feeding frisbees into the shooter
+		shootServo->Set(40);
 	}
 	else{
 		shootServo->Set(-40);
+		shootTimer->Stop();
+		shootTimer->Reset();
 	}
-	// When do we shut off the angle motor? Oh not too late! you broke the machine.
 }
