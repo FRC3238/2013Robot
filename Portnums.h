@@ -37,6 +37,7 @@ const UINT32 RightEncoderPortB = 6;
 
 // PWM Ports (Servo AND PWM Jaguars)
 #if ROBOT == real
+const UINT32 ShooterServoPort = 1;
 #endif
 
 // I2C Addresses
@@ -45,6 +46,7 @@ const UINT32 RightEncoderPortB = 6;
 
 // Analog Ports
 #if ROBOT == real
+const UINT32 AnglePotPort = 7;
 #endif
 
 // Solenoid Ports

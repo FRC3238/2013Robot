@@ -15,19 +15,23 @@ public:
     //Initialization
     bool Init();
     
+    //Gets the shooter up to full speed
     void StartShooter();
     
+    //Stops the shooter
     void StopShooter();
     
-    void Tilt(float angle);
+    //Set the shooter to a specific angle
+    void SetAngle(float desiredAngle);
     
-    bool IsTiltSet();
+    //Allows for manual control of the tilting mechanism
+    void ManualAngle(float power);
     
+    //Fires one frisbee from the shooter
     void Shoot();
     
+    //Gets the current angle of the shooter
     float GetAngle();
-    
-    bool Loaded();
 
     // Turns off all motors controlled by this class
     void Disable();
@@ -39,9 +43,17 @@ private:
     // Put useful functions and variables here
 	bool Initialized;
 	bool StartingShooter;
+	float Angle;
+	int motorDirection;
+	float currentAngle;
+	bool shooting;
+	float totalSpoolUpTime;
 	CANJaguar *shootJag;
-	Relay *tiltRelay;
+	CANJaguar *tiltJag;
 	Timer *spoolUpTimer;
+	Timer *shootTimer;
+	AnalogChannel *anglePot;
+	Servo *shootServo;
 };
 
 #endif
