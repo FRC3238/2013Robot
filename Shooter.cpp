@@ -1,6 +1,6 @@
 #include "Shooter.h"
 #include "Portnums.h"
-#include <cmath>
+#include <cmath> //So we can use an absolute value function
 float totalSpoolUpTime = 3.0;
 float tiltStopDistance = 1.0;
 
