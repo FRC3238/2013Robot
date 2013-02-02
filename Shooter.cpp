@@ -28,7 +28,7 @@ void Shooter::StartShooter(){ //Look in idle for how the shooter actually spools
 void Shooter::StopShooter(){
 	StartingShooter = false;
 	shootJag->Set(0);
-} 
+}
 
 void Shooter::SetAngle(float desiredAngle){
 	//Scale angles to match
@@ -45,6 +45,10 @@ void Shooter::SetAngle(float desiredAngle){
 	else{
 		tiltJag->Set(1*motorDirection);
 	}
+}
+
+void Shooter::ManualTilt(float power){
+	tiltJag->Set(power);
 }
 
 void Shooter::Shoot(){

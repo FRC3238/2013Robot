@@ -25,7 +25,7 @@ public:
     void SetAngle(float desiredAngle);
     
     //Allows for manual control of the tilting mechanism
-    void ManualAngle(float power);
+    void ManualTilt(float power);
     
     //Fires one frisbee from the shooter
     void Shoot();
