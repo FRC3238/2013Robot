@@ -15,9 +15,9 @@
  
 // Jaguar CAN IDs
 #if ROBOT == real
-const UINT8 ChassisLeftMtr = 1;
-const UINT8 ClimberLeftMtr = 2;
-const UINT8 ChassisRightMtr = 3;
+const UINT8 ChassisLeftMtr = 7;
+const UINT8 ClimberLeftMtr = 3;
+const UINT8 ChassisRightMtr = 2;
 const UINT8 ClimberRightMtr = 4;
 const UINT8 CollectorFloorMtr = 5;
 const UINT8 CollectorIrisMtr = 6;

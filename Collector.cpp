@@ -71,9 +71,9 @@ Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UIN
 	BottomFloorCloseSwitch = new DigitalInput(BotFloorCloseSwitch);
 	bucketStatusSwitch = new DigitalInput(bucketThingy); 
 	FloorDrive = new Relay(FloorMotorRelay);
-	IrisServoRight = new Servo(IrisServoOne);
-	IrisServoLeft = new Servo(IrisServoTwo);
-	lipDrive = new Servo(lipServo);
+	IrisServoRight = new Servo(IrisServoRightPort);
+	IrisServoLeft = new Servo(IrisServoLeftPort);
+	lipDrive = new Servo(LipServo);
 	IrisTimer = new Timer();
 	state = limbo;
 }

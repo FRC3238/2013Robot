@@ -3,6 +3,9 @@
 #include <cmath> //So we can use an absolute value function
 float totalSpoolUpTime = 3.0;
 float tiltStopDistance = 1.0;
+float tiltSpeed = 1.0;
+float servoPush = 0.75;
+float servoPull = 0.25;
 
 Shooter::Shooter(int shootIn, int tiltIn){
 	
@@ -22,6 +25,7 @@ bool Shooter::Init(){ //Resetting the timer used for spooling up the shooter
 }
 
 void Shooter::StartShooter(){ //Look in idle for how the shooter actually spools up
+	spoolUpTimer->Start();
 	StartingShooter = true;
 }
 
@@ -32,18 +36,19 @@ void Shooter::StopShooter(){
 
 void Shooter::SetAngle(float desiredAngle){
 	//Scale angles to match
-	currentAngle = GetAngle();
+	float currentAngle = GetAngle();
+	float motorDirection;
 	if(desiredAngle < currentAngle){ //Finds which direction the tilt motor needs to run
-		motorDirection = -1;
+		motorDirection = -1.0;
 	}
 	else{
-		motorDirection = 1;
+		motorDirection = 1.0;
 	}
 	if(abs(desiredAngle - currentAngle) < tiltStopDistance){ //Determines when to stop the motor based on the "slop" value
-		tiltJag->Set(0);
+		ManualTilt(0);
 	}
 	else{
-		tiltJag->Set(1*motorDirection);
+		ManualTilt(tiltSpeed*motorDirection);
 	}
 }
 
@@ -52,12 +57,12 @@ void Shooter::ManualTilt(float power){
 }
 
 void Shooter::Shoot(){
-	shootServo->Set(40);
+	shootServo->Set(servoPush);
 	shootTimer->Start(); // Where's the state that says we're doing a shoot?
 }
 
 float Shooter::GetAngle(){
-	Angle = anglePot->GetAverageVoltage();
+	float Angle = anglePot->GetAverageVoltage();
 	//Place mapper in this function
 	return Angle;
 }
@@ -72,20 +77,16 @@ void Shooter::Idle(){
 	double shootTime = shootTimer->Get();
 	if(StartingShooter){
 		if(spoolUpTime < totalSpoolUpTime){
-			spoolUpTimer->Start();
-			shootJag->Set(spoolUpTime * 1.0/totalSpoolUpTime);
+			shootJag->Set(spoolUpTime/totalSpoolUpTime);
 		}
 		else{
 			spoolUpTimer->Stop();
 			shootJag->Set(1.0);
 		}
 	}
-	if(0.0 < shootTime < 3.0){ //The timing for the servo feeding frisbees into the shooter
-		shootServo->Set(40);
-	}
-	else{
-		shootServo->Set(-40);
-		shootTimer->Stop();
+	if(shootTime > 3.0){ //The timing for the servo feeding frisbees into the shooter
+		shootServo->Set(servoPull);
 		shootTimer->Reset();
+		shootTimer->Stop();
 	}
 }

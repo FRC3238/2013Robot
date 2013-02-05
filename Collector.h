@@ -99,8 +99,8 @@ private:
 	Relay *FloorDrive;
 	Servo *IrisServoRight;
 	Servo *IrisServoLeft;
-	Timer *IrisTimer;
 	Servo *lipDrive;
+	Timer *IrisTimer;
 	int state;
 };
 
