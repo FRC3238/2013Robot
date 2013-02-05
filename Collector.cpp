@@ -65,15 +65,15 @@ int Queue::top(){
 
 
 
-Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UINT32  BucketSwitch){
+Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UINT32  bucketThingy) :Queue()     {
 	
 	BottomFloorOpenSwitch = new DigitalInput(BotFloorOpenSwitch);
 	BottomFloorCloseSwitch = new DigitalInput(BotFloorCloseSwitch);
-	bucketStatusSwitch = new DigitalInput(BucketSwitch); 
+	bucketStatusSwitch = new DigitalInput(bucketThingy); 
 	FloorDrive = new Relay(FloorMotorRelay);
-	IrisServoRight = new Servo(IrisServoRightPort);
-	IrisServoLeft = new Servo(IrisServoLeftPort);
-	lipDrive = new Servo(LipServo);
+	IrisServoRight = new Servo(IrisServoOne);
+	IrisServoLeft = new Servo(IrisServoTwo);
+	lipDrive = new Servo(lipServo);
 	IrisTimer = new Timer();
 	state = limbo;
 }
@@ -139,9 +139,10 @@ void Collector::lockLip(){
 }
 
 void Collector::openFloor(){
+	if(!isFloorOpen()){
 	FloorDrive->Set(Relay::kForward);
+	}
 }
-
 void Collector::openIris(){
 	IrisServoRight->Set(unlockRight);
 	IrisServoLeft->Set(unlockLeft);
@@ -155,7 +156,9 @@ void Collector::closeIris(){
 }
 
 void Collector::closeFloor(){
+	if(!isFloorClose()){
 	FloorDrive->Set(Relay::kReverse);
+	}
 }
 
 void Collector::shutoffFloor(){
@@ -163,25 +166,26 @@ void Collector::shutoffFloor(){
 }
 
 bool Collector::isFloorClose(){
-	return !(BottomFloorCloseSwitch->Get());	 
+	return BottomFloorCloseSwitch->Get();	 
 }
 
 bool Collector::isFloorOpen(){
-	return !(BottomFloorOpenSwitch->Get());
+	return BottomFloorOpenSwitch->Get();
 }
 
 bool Collector::isFrisbeeReady(){
-	return !(bucketStatusSwitch->Get()); 
+	return bucketStatusSwitch->Get(); 
 }
 
 void Collector::dropDisc(){
 	if(state == loaded){
+		push(stepCloseIris);
 		push(stepOpenFloor);
 		push(stepCloseFloor);
 		push(stepOpenIris);
 		push(stepModeEmpty);
-		openFloor();
-		state = running;
+		startStep();
+		
 	}
 }
 
@@ -189,15 +193,86 @@ void Collector::Init(){
 	push(stepCloseFloor);
 	push(stepOpenIris);
 	push(stepModeEmpty);
-	closeFloor();
-	dump();
-	state = running;
+	startStep();
 }
 
 void Collector::Disable(){
 	shutoffFloor();
 	dump();
 	state = limbo;		
+}
+
+void Collector::startStep(){
+	if(!empty()){
+		switch(top()){
+			case  stepCloseFloor:
+					closeFloor();
+					state = running;
+			break;
+			case stepOpenFloor:
+					openFloor();
+					state = running;
+			break;
+			case stepCloseIris:
+					closeIris();
+					state = running;
+			break;
+			case stepOpenIris:
+					openIris();
+					state = running;
+			break;
+			case stepModeEmpty:
+					state = isEmpty;
+					pop();
+			break;
+			case stepModeLoaded:
+					state = loaded;
+					pop();
+			break;
+		}
+	}
+}
+void Collector::checkStep(){
+	switch(top()){
+			case  stepCloseFloor:
+				if(isFloorClose()){
+					shutoffFloor();
+					pop();
+					startStep();
+				}
+			break;
+			case stepOpenFloor:
+				if(isFloorOpen()){
+					shutoffFloor();
+					pop();
+					startStep();
+				}
+			break;
+			case stepCloseIris:
+				if(IrisTimer->HasPeriodPassed(IrisTime)){
+					pop();
+					startStep();
+				}
+			break;
+			case stepOpenIris:
+				if(IrisTimer->HasPeriodPassed(IrisTime)){
+					pop();
+					startStep();
+				}
+			break;
+			case stepModeEmpty:
+				state = isEmpty;
+				pop();
+				startStep();
+				
+			break;
+			case stepModeLoaded:
+				state = loaded;
+				pop();
+				startStep();
+				
+			break;
+			}
 }
 
 void Collector::Idle(){
@@ -207,10 +282,8 @@ void Collector::Idle(){
 	break;
 	case isEmpty :
 		if(isFrisbeeReady()){
-			push(stepCloseIris);
-			push(stepModeLoaded);
-			closeIris();
-			state = running;
+			state = loaded;
+			
 		}
 		
 	break;
@@ -221,38 +294,7 @@ void Collector::Idle(){
 		
 	break;
 	case running :
-		switch(top()){
-		case  stepCloseFloor:
-			if(isFloorClose()){
-				shutoffFloor();
-				pop();
-			}
-		break;
-		case stepOpenFloor:
-			if(isFloorOpen()){
-				shutoffFloor();
-				pop();
-			}
-		break;
-		case stepCloseIris:
-			if(IrisTimer->HasPeriodPassed(IrisTime)){
-				pop();
-			}
-		break;
-		case stepOpenIris:
-			if(IrisTimer->HasPeriodPassed(IrisTime)){
-				pop();
-			}
-		break;
-		case stepModeEmpty:
-			pop();
-			state = isEmpty;
-		break;
-		case stepModeLoaded:
-			pop();
-			state = loaded;
-		break;
-		}
+		checkStep();
 	break;
 	}
 }
