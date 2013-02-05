@@ -2,7 +2,8 @@
 #define PORTNUMS_H
 #include <WPILib.h>
 
-#define ROBOT real
+#define ROBOT 'r'
+//#define ROBOT 'p'
 
 /* Constant naming:
  * SubsystemDescription
@@ -14,7 +15,7 @@
  */
  
 // Jaguar CAN IDs
-#if ROBOT == real
+#if ROBOT == 'r'
 const UINT8 ChassisLeftMtr = 7;
 const UINT8 ClimberLeftMtr = 3;
 const UINT8 ChassisRightMtr = 2;
@@ -24,7 +25,7 @@ const UINT8 CollectorIrisMtr = 6;
 #endif
 
 // GPIO Ports
-#if ROBOT == real
+#if ROBOT == 'r'
 const UINT32 ClimberLeftEncoder = 1;
 const UINT32 ClimberRightEncoder = 2;
 const UINT32 LeftEncoderPortA = 3;
@@ -37,12 +38,12 @@ const UINT32 BucketSwitchPort = 9;
 #endif
 
 // Relay Ports
-#if ROBOT == real
+#if ROBOT == 'r'
 const UINT32 FloorMotorRelay = 1;
 #endif
 
 // PWM Ports (Servo AND PWM Jaguars)
-#if ROBOT == real
+#if ROBOT == 'r'
 const UINT32 ShooterServoPort = 1;
 const UINT32 IrisServoRightPort = 2;
 const UINT32 IrisServoLeftPort = 3;
@@ -50,24 +51,24 @@ const UINT32 LipServo = 4;
 #endif
 
 // I2C Addresses
-#if ROBOT == real
+#if ROBOT == 'r'
 #endif
 
 // Analog Ports
-#if ROBOT == real
+#if ROBOT == 'r'
 const UINT32 AnglePotPort = 7;
 #endif
 
 // Solenoid Ports
-#if ROBOT == real
+#if ROBOT == 'r'
 #endif
 
 // Operator Console Ports
-#if ROBOT == real
+#if ROBOT == 'r'
 #endif
 
 // USB HID Ports
-#if ROBOT == real
+#if ROBOT == 'r'
 const UINT8 DriveJoystickPort = 1;
 #endif
 
