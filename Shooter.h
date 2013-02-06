@@ -10,7 +10,7 @@ public:
     // If you wish to add or remove any public methods, talk to Nick Papadakis
 
     // Constructor
-    Shooter(int shootIn, int tiltIn);
+    Shooter(int shootIn, int tiltIn, int tachPortIn);
     
     //Initialization
     bool Init();
@@ -33,6 +33,9 @@ public:
     //Gets the current angle of the shooter
     float GetAngle();
 
+    // Gets current speed of shooter
+    float GetRPM();
+
     // Turns off all motors controlled by this class
     void Disable();
 
@@ -49,6 +52,8 @@ private:
 	Timer *shootTimer;
 	AnalogChannel *anglePot;
 	Servo *shootServo;
+    DigitalInput *tachIn;
+    Counter *tach;
 };
 
 #endif

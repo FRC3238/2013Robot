@@ -7,7 +7,7 @@ float tiltSpeed = 1.0;
 float servoPush = 0.75;
 float servoPull = 0.25;
 
-Shooter::Shooter(int shootIn, int tiltIn){
+Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
 	
 	Initialized = false;
 	shootJag = new CANJaguar(shootIn);
@@ -16,10 +16,14 @@ Shooter::Shooter(int shootIn, int tiltIn){
 	anglePot = new AnalogChannel(AnglePotPort);
 	shootServo = new Servo(ShooterServoPort);
 	shootTimer = new Timer();
+    tachIn = new DigitalInput(tachPortIn);
+    tach = new Counter(tachIn);
 }
 
 bool Shooter::Init(){ //Resetting the timer used for spooling up the shooter
 	spoolUpTimer->Reset();
+    tach->Start();
+    tach->Reset();
 	Initialized = true;
 	return Initialized;
 }
@@ -89,4 +93,10 @@ void Shooter::Idle(){
 		shootTimer->Reset();
 		shootTimer->Stop();
 	}
+}
+
+float Shooter::GetRPM() {
+    SmartDashboard::PutBoolean("Tach curVal", tachIn->Get());
+    SmartDashboard::PutNumber("ShooterTachNum", tach->Get());
+    return 0.5/(tach->GetPeriod());
 }

@@ -5,6 +5,7 @@
 #include "Chassis.h"
 #include "Climber.h"
 #include "Collector.h"
+#include "Shooter.h"
 
 class robot3238 : public IterativeRobot {
 
@@ -19,10 +20,13 @@ public:
 	void TeleopInit(void);
 	void TeleopPeriodic(void);
 
+    void Periodic(void);
+
 private:
 	Chassis *theChassis;
     Climber *theClimber;
     Collector *theCollector;
+    Shooter *theShooter;
 	Joystick *driveJoystick;
 	DriverStation *DS;
 	DriverStationEnhancedIO &DSEIO;

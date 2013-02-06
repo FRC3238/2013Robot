@@ -16,12 +16,12 @@
  
 // Jaguar CAN IDs
 #if ROBOT == 'r'
-const UINT8 ChassisLeftMtr = 7;
-const UINT8 ClimberLeftMtr = 3;
+const UINT8 ShooterTiltMtr = 1;
 const UINT8 ChassisRightMtr = 2;
-const UINT8 ClimberRightMtr = 4;
-const UINT8 CollectorFloorMtr = 5;
-const UINT8 CollectorIrisMtr = 6;
+const UINT8 ShooterShooterMtr = 3;
+const UINT8 ClimberLeftMtr = 5;
+const UINT8 ClimberRightMtr = 6;
+const UINT8 ChassisLeftMtr = 7;
 #endif
 
 // GPIO Ports
@@ -35,6 +35,7 @@ const UINT32 RightEncoderPortB = 6;
 const UINT32 FloorCloseSwitchPort = 7;
 const UINT32 FloorOpenSwitchPort = 8;
 const UINT32 BucketSwitchPort = 9;
+const UINT32 ShooterTach = 10;
 #endif
 
 // Relay Ports
