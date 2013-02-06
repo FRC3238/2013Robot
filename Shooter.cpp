@@ -1,11 +1,12 @@
 #include "Shooter.h"
 #include "Portnums.h"
 #include <cmath> //So we can use an absolute value function
-float totalSpoolUpTime = 3.0;
+float totalSpoolUpTime = 2.0;
 float tiltStopDistance = 1.0;
 float tiltSpeed = 1.0;
-float servoPush = 0.75;
-float servoPull = 0.25;
+float servoPush = 0.10;
+float servoPull = 1.0;
+float shootSpeedFactor = -1.0;
 
 Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
 	
@@ -77,18 +78,22 @@ void Shooter::Disable(){
 }
 
 void Shooter::Idle(){
+    //Settings.Get
+    //float servoPush = 0.25;
+    //float servoPull = 0.80;
+
 	double spoolUpTime = spoolUpTimer->Get(); //This is where the action happens for the shooter starting
 	double shootTime = shootTimer->Get();
 	if(StartingShooter){
 		if(spoolUpTime < totalSpoolUpTime){
-			shootJag->Set(spoolUpTime/totalSpoolUpTime);
+			shootJag->Set(shootSpeedFactor*(spoolUpTime/totalSpoolUpTime));
 		}
 		else{
 			spoolUpTimer->Stop();
-			shootJag->Set(1.0);
+			shootJag->Set(shootSpeedFactor);
 		}
 	}
-	if(shootTime > 3.0){ //The timing for the servo feeding frisbees into the shooter
+	if(shootTime > 0.5){ //The timing for the servo feeding frisbees into the shooter
 		shootServo->Set(servoPull);
 		shootTimer->Reset();
 		shootTimer->Stop();

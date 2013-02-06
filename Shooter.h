@@ -3,6 +3,7 @@
 
 #include <WPILib.h>
 #include "Portnums.h"
+#include "Settings.h"
 
 class Shooter {
 public:

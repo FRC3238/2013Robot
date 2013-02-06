@@ -5,6 +5,7 @@
 robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhancedIO()){
 	
 	driveJoystick = new Joystick (DriveJoystickPort);
+	shootJoystick = new Joystick (ShootJoystickPort);
 	theChassis = new Chassis(ChassisLeftMtr,ChassisRightMtr);
     theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, -1);
     //theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
@@ -41,6 +42,7 @@ void robot3238::TeleopInit(void) {
 
 void robot3238::DisabledPeriodic(void)  {
     Periodic();
+    Settings.rehash();
     theChassis->SetBrake();
 }
 
@@ -52,8 +54,8 @@ void robot3238::AutonomousPeriodic(void) {
 void robot3238::TeleopPeriodic(void) {
     Periodic();
 
-    float forward = -driveJoystick->GetRawAxis(2); //getting forward and backward value from movement joystick
-    float twist = -driveJoystick->GetRawAxis(3); //getting the turning(twist) value from movement joystick
+    float forward  = - driveJoystick->GetRawAxis(2); //getting forward and backward value from movement joystick
+    float twist    = - driveJoystick->GetRawAxis(3); //getting the turning(twist) value from movement joystick
     float throttle = -(driveJoystick->GetRawAxis(4)/2 - .5);
     bool invert = driveJoystick->GetRawButton(2);
     theChassis->ArcadeDrive(forward, twist, throttle, invert);
@@ -63,11 +65,23 @@ void robot3238::TeleopPeriodic(void) {
     if(driveJoystick->GetRawButton(8) == 1){
         theClimber->StartClimb();
     }
+
+    float shootPwr = shootJoystick->GetRawAxis(2);
+    theShooter->ManualTilt(shootPwr);
+
+    bool shoot = shootJoystick->GetRawButton(1);
+    if (shoot) {
+        theShooter->Shoot();
+    }
+
+    bool startShooter = shootJoystick->GetRawButton(3);
+    bool stopShooter = shootJoystick->GetRawButton(4);
+    if (startShooter) theShooter->StartShooter();
+    else if (stopShooter) theShooter->StopShooter();
 }
 
 // Put things that should be done periodically in any mode here
 void robot3238::Periodic(void) {
-    Settings.rehash();
     SmartDashboard::PutNumber("RightEncoderValue", theChassis->GetRightEncoderValue());
     SmartDashboard::PutNumber("LeftEncoderValue", theChassis->GetLeftEncoderValue());
     SmartDashboard::PutNumber("RightEncoderDistance", theChassis->GetRightEncoderDistance());
@@ -76,6 +90,7 @@ void robot3238::Periodic(void) {
 
     theChassis->Idle();
     theClimber->Idle();
+    theShooter->Idle();
     DriverStationLCD::GetInstance()->UpdateLCD();
 }
 

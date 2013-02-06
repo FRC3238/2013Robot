@@ -16,10 +16,10 @@
  
 // Jaguar CAN IDs
 #if ROBOT == 'r'
-const UINT8 ShooterTiltMtr = 1;
+const UINT8 ShooterShooterMtr = 1;
 const UINT8 ChassisRightMtr = 2;
-const UINT8 ShooterShooterMtr = 3;
-const UINT8 ClimberLeftMtr = 5;
+const UINT8 ClimberLeftMtr = 3;
+const UINT8 ShooterTiltMtr = 5;
 const UINT8 ClimberRightMtr = 6;
 const UINT8 ChassisLeftMtr = 7;
 #endif
@@ -71,6 +71,7 @@ const UINT32 AnglePotPort = 7;
 // USB HID Ports
 #if ROBOT == 'r'
 const UINT8 DriveJoystickPort = 1;
+const UINT8 ShootJoystickPort = 2;
 #endif
 
 #endif

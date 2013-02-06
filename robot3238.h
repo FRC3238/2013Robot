@@ -28,6 +28,7 @@ private:
     Collector *theCollector;
     Shooter *theShooter;
 	Joystick *driveJoystick;
+    Joystick *shootJoystick;
 	DriverStation *DS;
 	DriverStationEnhancedIO &DSEIO;
 	SmartDashboard *smartdash;
