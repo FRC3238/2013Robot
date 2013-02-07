@@ -9,13 +9,13 @@ class Climber {
 public:
     // Tunables
     double syncP;
-    INT32 TicksPerSweep;
+    INT32 TicksAtBeginning;
     INT32 TicksAtEnd;
     double leftMtrFactor, rightMtrFactor;
 
     // These methods are visable (callable) to anyone using this class
     // If you wish to add or remove any public methods, talk to Nick Papadakis
-    enum ClimberState { DEACTIVATED, TILTED, DEPLOYED, C1, C2, C3, C4, C5, C6, };
+    enum ClimberState { DEACTIVATED, SHOOTER_RAISED, WAITING_FOR_TILT, TILTED, DEPLOYED, C1, C2, C3, C4, C5, };
 
     // Constructor
     Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 rightEncIn, UINT8 flopDownIn);
@@ -23,8 +23,10 @@ public:
     //Initialization
     bool Init();
     
-    // Robot MUST already be tilted
-    void StartClimb();
+    // Robot should have its shooter raised
+    void StartClimb(bool start = true);
+
+    void DoneTilting(bool done = true);
 
     ClimberState GetClimberState();
 

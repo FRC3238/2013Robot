@@ -20,9 +20,9 @@ Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 r
 
     // Set initial values for tunables
     syncP = 0.05;
-    TicksPerSweep = 200;
+    TicksAtBeginning = 100;
     TicksAtEnd = 50;
-    leftMtrFactor = 0.5, rightMtrFactor = 0.5;
+    leftMtrFactor = 0.75, rightMtrFactor = 0.75;
     
 }
 
@@ -36,9 +36,13 @@ bool Climber::Init() {
     return initialized;
 }
 
-void Climber::StartClimb() {
+void Climber::StartClimb(bool start) {
     // All work done in Idle()
-    if (CS == DEACTIVATED) CS = TILTED;
+    if (start && CS == DEACTIVATED) CS = SHOOTER_RAISED;
+}
+
+void Climber::DoneTilting(bool done) {
+    if (done && CS == WAITING_FOR_TILT) CS = TILTED;
 }
 
 Climber::ClimberState Climber::GetClimberState() {
@@ -61,7 +65,6 @@ void Climber::Idle() {
     SmartDashboard::PutNumber("Climb_RightEnc", rEncD);
 
     syncP =          Settings.getDouble("Climb_syncP", syncP, true);
-    TicksPerSweep =  Settings.getLong  ("Climb_TicksPerSweep", TicksPerSweep, true);
     TicksAtEnd =     Settings.getLong  ("Climb_TicksAtEnd", TicksAtEnd, true);
     leftMtrFactor =  Settings.getDouble("Climb_leftMtrFactor", leftMtrFactor, true);
     rightMtrFactor = Settings.getDouble("Climb_rightMtrFactor", rightMtrFactor, true);
@@ -71,36 +74,53 @@ void Climber::AutoLift() {
 
     /* Every "up" or "down" is based on the upper hook
     lv: 
-     0  0) Start down
-     0  1) Move up to grab rung 1
-     1  2) Move down to pass off rung 1
-     1  3) Move up to grab rung 2
-     2  4) Move down to pass off rung 2
-     2  5) Move up to grab rung 3
-     3  6) Move down to finish
+     0  0) Start down with 4 frisbees and raised shooter when button is pressed
+     0  1) Move up a little
+     0  2) Wait for drivers to line up, tilt, and press button
+     1  3) Move down to pass off rung 1
+     1  4) Move up to grab rung 2
+     2  5) Move down to pass off rung 2
+     2  7) Move up to grab rung 3
+     3  7) Move down to finish
      */
 
     INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
-    static float liftSpd = 0.0;
+    float liftSpd = 0.0;
     switch(CS) {
     case DEACTIVATED:
+        liftSpd = 0;
+        break;
+    case SHOOTER_RAISED:
+        // TODO
+        liftSpd = 1.0;
+        if (lEncD > TicksAtBeginning || rEncD > TicksAtBeginning) CS = WAITING_FOR_TILT;
+        break;
+    case WAITING_FOR_TILT:
+        // wait for signal from 
         liftSpd = 0;
         break;
     case TILTED:
         liftSpd = 0;
         // deploy
         CS = DEPLOYED;
+        break;
     case DEPLOYED:
         // ??? Line up further? Wait for driver signal?
         liftSpd = 1.0;
         CS = C1;
-    case C1: case C2: case C3: case C4: case C5: case C6: 
-        if (lEncD > TicksPerSweep && rEncD > TicksPerSweep) {
-             leftEnc.IncreaseOffset(TicksPerSweep);
-            rightEnc.IncreaseOffset(TicksPerSweep);
+    case C1: case C3: case C5:
+        // Down
+        if (!leftLift.GetForwardLimitOK() || !rightLift.GetForwardLimitOK()) {
             CS = (ClimberState)(CS + 1);
-            if (CS > C6) CS = DEACTIVATED;
-            liftSpd = -liftSpd;
+            if (CS > C5) CS = DEACTIVATED;
+            liftSpd = -1.0;
+        }
+        break;
+    case C2: case C4:
+        // Down
+        if (!leftLift.GetReverseLimitOK() || !rightLift.GetReverseLimitOK()) {
+            CS = (ClimberState)(CS + 1);
+            liftSpd = 1.0;
         }
         break;
     }
