@@ -35,8 +35,9 @@ void Shooter::StartShooter(){ //Look in idle for how the shooter actually spools
 }
 
 void Shooter::StopShooter(){
-	StartingShooter = false;
 	shootJag->Set(0);
+	spoolUpTimer->Reset();
+	StartingShooter = false;
 }
 
 void Shooter::SetAngle(float desiredAngle){
