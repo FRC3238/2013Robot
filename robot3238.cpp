@@ -8,7 +8,7 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 	shootJoystick = new Joystick (ShootJoystickPort);
 	theChassis = new Chassis(ChassisLeftMtr,ChassisRightMtr);
     theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, -1);
-    //theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
+    theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
     theShooter = new Shooter(ShooterShooterMtr, ShooterTiltMtr, ShooterTach);
 }
 	
@@ -38,6 +38,7 @@ void robot3238::AutonomousInit(void) {
 void robot3238::TeleopInit(void) {
 
     theChassis->Init();
+    //theCollector->start();
 }
 
 void robot3238::DisabledPeriodic(void)  {
@@ -69,9 +70,21 @@ void robot3238::TeleopPeriodic(void) {
     float shootPwr = shootJoystick->GetRawAxis(2);
     theShooter->ManualTilt(shootPwr);
 
+    //bool dropFrisbee = shootJoystick->GetRawButton(2);
+    //if (dropFrisbee) {
+    //    theCollector->dropDisc();
+    //}
+    
     bool shoot = shootJoystick->GetRawButton(1);
     if (shoot) {
         theShooter->Shoot();
+    }
+
+    if (theCollector->testHaveFrisbee()) {
+        theCollector->testOpenIris();
+    }
+    else {
+        theCollector->testCloseIris();
     }
 
     bool startShooter = shootJoystick->GetRawButton(3);
@@ -88,8 +101,14 @@ void robot3238::Periodic(void) {
     SmartDashboard::PutNumber("LeftEncoderDistance", theChassis->GetLeftEncoderDistance());
     SmartDashboard::PutNumber("ShooterRPM", theShooter->GetRPM());
 
+    SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->testFloorClosed());
+    SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->testFloorOpened());
+    SmartDashboard::PutBoolean("CollectorhaveFrisbee", theCollector->testHaveFrisbee());
+
+
     theChassis->Idle();
     theClimber->Idle();
+    //theCollector->Idle();
     theShooter->Idle();
     DriverStationLCD::GetInstance()->UpdateLCD();
 }

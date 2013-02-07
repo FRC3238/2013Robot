@@ -21,11 +21,11 @@ enum {
 };
 
 const double IrisTime = 1.0;
-const float unlockRight = 1;
-const float unlockLeft = 1;
-const float lockRight = 1;
-const float lockLeft = 1;
-const float lockLipVal = 1;
+const float unlockRight =  0;
+const float unlockLeft =   1;
+const float lockRight =    1;
+const float lockLeft =     0;
+const float lockLipVal =   0;
 const float unlockLipVal = 1;
 
 class QueueItem{
