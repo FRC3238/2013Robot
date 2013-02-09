@@ -8,13 +8,14 @@
 // Add code to differentiate between "done" and "disabled" for victory lights, etc
 // Put PID loop in to make both sides run same speed
 
-Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 rightEncIn, UINT8 flopDownIn) : 
+Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 rightEncIn, UINT32 deployerLeftIn, UINT32 deployerRightIn) : 
     initialized(false),
     CS(DEACTIVATED),
     leftLiftPort(leftLiftIn), rightLiftPort(rightLiftIn),
-    flopDownPort(flopDownIn),
+    deployerLeftPort(deployerLeftIn), deployerRightPort(deployerRightIn),
     leftEncPort(leftEncIn), rightEncPort(rightEncIn),
     leftLift(leftLiftPort), rightLift(rightLiftPort),
+    deployerLeft(deployerLeftPort), deployerRight(deployerRightPort),
     leftEnc(leftEncPort), rightEnc(rightEncPort)
     {
 
@@ -36,22 +37,42 @@ bool Climber::Init() {
     return initialized;
 }
 
+void Climber::Disable() {
+    leftLift .Set(0);
+    rightLift.Set(0);
+    leftLift .DisableControl();
+    rightLift.DisableControl();
+}
+
+void Climber::ManualClimb(double left, double right) {
+    leftLift.Set(left);
+    rightLift.Set(right);
+}
+
 void Climber::StartClimb(bool start) {
     // All work done in Idle()
     if (start && CS == DEACTIVATED) CS = SHOOTER_RAISED;
 }
-
+bool Climber::IsReadyToTilt() {
+    return CS == WAITING_FOR_TILT;
+}
 void Climber::DoneTilting(bool done) {
     if (done && CS == WAITING_FOR_TILT) CS = TILTED;
+}
+void Climber::PauseClimb(bool pause) {
+    //switch((Climber::pause<<1) | (pause)) {
+    //case 0: case 3: break;
+    //case 1: Disable();
+    //case 2: Climber::pause = pause; break;
+    //}
+    if (Climber::pause != pause) {
+        Climber::pause = pause;
+        if (pause) Disable();
+    }
 }
 
 Climber::ClimberState Climber::GetClimberState() {
     return CS;
-}
-
-void Climber::Disable() {
-    leftLift.Disable();
-    rightLift.Disable();
 }
 
 void Climber::Idle() {
@@ -96,12 +117,16 @@ void Climber::AutoLift() {
         if (lEncD > TicksAtBeginning || rEncD > TicksAtBeginning) CS = WAITING_FOR_TILT;
         break;
     case WAITING_FOR_TILT:
-        // wait for signal from 
+        // wait for signal from calling class
+        if (solenoidtimer.HasPeriodPassed(0.5)) {
+            bool cur = deployerLeft.Get();
+            deployerLeft.Set (!cur);
+            deployerRight.Set(!cur);
+        }
         liftSpd = 0;
         break;
     case TILTED:
         liftSpd = 0;
-        // deploy
         CS = DEPLOYED;
         break;
     case DEPLOYED:
@@ -110,27 +135,29 @@ void Climber::AutoLift() {
         CS = C1;
     case C1: case C3: case C5:
         // Down
+        liftSpd = -1.0;
         if (!leftLift.GetForwardLimitOK() || !rightLift.GetForwardLimitOK()) {
             CS = (ClimberState)(CS + 1);
             if (CS > C5) CS = DEACTIVATED;
-            liftSpd = -1.0;
         }
         break;
     case C2: case C4:
         // Down
+        liftSpd = 1.0;
         if (!leftLift.GetReverseLimitOK() || !rightLift.GetReverseLimitOK()) {
             CS = (ClimberState)(CS + 1);
-            liftSpd = 1.0;
         }
         break;
     }
-    double adj = syncP * (lEncD - rEncD);
-    if (liftSpd > 0) {
-         leftLift.Set( leftMtrFactor*(liftSpd - adj));
-        rightLift.Set(rightMtrFactor*(liftSpd + adj));
-    }
-    else {
-         leftLift.Set( leftMtrFactor*(liftSpd + adj));
-        rightLift.Set(rightMtrFactor*(liftSpd - adj));
+    if (!pause) {
+        double adj = syncP * (lEncD - rEncD);
+        if (liftSpd > 0) {
+             leftLift.Set( leftMtrFactor*(liftSpd - adj));
+            rightLift.Set(rightMtrFactor*(liftSpd + adj));
+        }
+        else {
+             leftLift.Set( leftMtrFactor*(liftSpd + adj));
+            rightLift.Set(rightMtrFactor*(liftSpd - adj));
+        }
     }
 }

@@ -6,6 +6,7 @@
 #include "Climber.h"
 #include "Collector.h"
 #include "Shooter.h"
+#include "Toggle.h"
 
 class robot3238 : public IterativeRobot {
 

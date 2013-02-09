@@ -79,7 +79,7 @@ public:
     
     void Idle();
 
-private:
+//private:
     // Put useful functions and variables here
 	void unlockLip();
 	void lockLip();

@@ -18,8 +18,9 @@
 #if ROBOT == 'r'
 const UINT8 ShooterShooterMtr = 1;
 const UINT8 ChassisRightMtr = 2;
-const UINT8 ClimberLeftMtr = 3;
-const UINT8 ShooterTiltMtr = 5;
+const UINT8 ShooterTiltMtr = 3;
+const UINT8 ChassisTiltMtr = 4;
+const UINT8 ClimberLeftMtr = 5;
 const UINT8 ClimberRightMtr = 6;
 const UINT8 ChassisLeftMtr = 7;
 #endif
@@ -62,6 +63,8 @@ const UINT32 AnglePotPort = 7;
 
 // Solenoid Ports
 #if ROBOT == 'r'
+const UINT32 ClimberDeployerLeftPort = 1;
+const UINT32 ClimberDeployerRightPort = 2;
 #endif
 
 // Operator Console Ports

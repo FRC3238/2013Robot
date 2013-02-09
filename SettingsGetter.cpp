@@ -8,9 +8,12 @@ SettingsGetter::SettingsGetter(std::string settingsfilenamein) :
 }
 
 void SettingsGetter::rehash() {
+    printf("Rehash() called. \n");
+    settingsfile.seekg(0);
     while (settingsfile) {
         std::string key, type, value;
         settingsfile >> key >> type >> value;
+        printf("Found setting: key: `%s' type: `%s' value: `%s'\n", key.c_str(), type.c_str(), value.c_str());
         // TODO: find errors in string to type conversion better
         if (type == "l" ||  type == "i") {
             long dval = atol(value.c_str());

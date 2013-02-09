@@ -1,11 +1,12 @@
 #include "Chassis.h"
 #include "Portnums.h"
 
-Chassis::Chassis(int inLeft, int inRight) {
+Chassis::Chassis(int inLeft, int inRight, int inTilt) {
 
 		Initialized = false;
 		LeftJag = new CANJaguar(inLeft);
 		RightJag = new CANJaguar(inRight);
+		TiltJag = new CANJaguar(inTilt);
 		drivetrain = new RobotDrive(LeftJag, RightJag);
 		drivetrain->SetInvertedMotor(RobotDrive::kFrontRightMotor , true);
 		LeftEncoder = new Encoder(LeftEncoderPortA, LeftEncoderPortB, true, Encoder::k4X);
@@ -107,4 +108,8 @@ void Chassis::Disable() {
 
 void Chassis::Idle(){
 	
+}
+
+void Chassis::ManualTilt(float speed) {
+    	TiltJag->Set(speed);
 }

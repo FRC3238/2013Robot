@@ -4,10 +4,10 @@
 
 robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhancedIO()){
 	
-	driveJoystick = new Joystick (DriveJoystickPort);
-	shootJoystick = new Joystick (ShootJoystickPort);
-	theChassis = new Chassis(ChassisLeftMtr,ChassisRightMtr);
-    theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, -1);
+    driveJoystick = new Joystick (DriveJoystickPort);
+    shootJoystick = new Joystick (ShootJoystickPort);
+    theChassis = new Chassis(ChassisLeftMtr, ChassisRightMtr, ChassisTiltMtr);
+    theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, ClimberDeployerLeftPort, ClimberDeployerRightPort);
     theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
     theShooter = new Shooter(ShooterShooterMtr, ShooterTiltMtr, ShooterTach);
 }
@@ -55,17 +55,33 @@ void robot3238::AutonomousPeriodic(void) {
 void robot3238::TeleopPeriodic(void) {
     Periodic();
 
-    float forward  = - driveJoystick->GetRawAxis(2); //getting forward and backward value from movement joystick
-    float twist    = - driveJoystick->GetRawAxis(3); //getting the turning(twist) value from movement joystick
-    float throttle = -(driveJoystick->GetRawAxis(4)/2 - .5);
+    float forward;
+    float twist;
+    float throttle;
+    static Toggle joysticksAsClimberToggle;
+    if (joysticksAsClimberToggle.Set(driveJoystick->GetRawButton(12))) {
+        forward = twist = throttle = 0;
+        theClimber->ManualClimb(driveJoystick->GetRawAxis(2), shootJoystick->GetRawAxis(2));
+    } else {
+        forward  = - driveJoystick->GetRawAxis(2); //getting forward and backward value from movement joystick
+        twist    = - driveJoystick->GetRawAxis(3); //getting the turning(twist) value from movement joystick
+        throttle = -(driveJoystick->GetRawAxis(4)/2 - .5);
+    }
+    SmartDashboard::PutBoolean("Climb Mode", joysticksAsClimberToggle.Get());
     bool invert = driveJoystick->GetRawButton(2);
     theChassis->ArcadeDrive(forward, twist, throttle, invert);
     if(driveJoystick->GetRawButton(7) == 1){
         theChassis->ResetEncoders();
     }
-    if(driveJoystick->GetRawButton(8) == 1){
-        theClimber->StartClimb();
-    }
+    //static bool climbing = false;
+    //if (!climbing) {
+    //    if (driveJoystick->GetRawButton(8)){
+    //        theClimber->StartClimb();
+    //        climbing = true;
+    //    }
+    //} else if (theClimber->IsReadyToTilt() && driveJoystick->GetRawButton(9)) {
+    //    theClimber->DoneTilting();
+    //}
 
     float shootPwr = shootJoystick->GetRawAxis(2);
     theShooter->ManualTilt(shootPwr);
@@ -87,10 +103,19 @@ void robot3238::TeleopPeriodic(void) {
         theCollector->testCloseIris();
     }
 
+    float colfloorval = driveJoystick->GetRawAxis(6);
+    if(colfloorval > 0.5)
+        theCollector->FloorDrive->Set(Relay::kForward);
+    else if (colfloorval < -0.5)
+        theCollector->FloorDrive->Set(Relay::kReverse);
+    else
+        theCollector->FloorDrive->Set(Relay::kOff);
+
     bool startShooter = shootJoystick->GetRawButton(3);
     bool stopShooter = shootJoystick->GetRawButton(4);
     if (startShooter) theShooter->StartShooter();
     else if (stopShooter) theShooter->StopShooter();
+    theChassis->ManualTilt(shootJoystick->GetRawAxis(6));
 }
 
 // Put things that should be done periodically in any mode here

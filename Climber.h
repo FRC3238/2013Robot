@@ -18,7 +18,7 @@ public:
     enum ClimberState { DEACTIVATED, SHOOTER_RAISED, WAITING_FOR_TILT, TILTED, DEPLOYED, C1, C2, C3, C4, C5, };
 
     // Constructor
-    Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 rightEncIn, UINT8 flopDownIn);
+    Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 rightEncIn, UINT32 deployerLeftIn, UINT32 deployerRightIn);
     
     //Initialization
     bool Init();
@@ -26,7 +26,14 @@ public:
     // Robot should have its shooter raised
     void StartClimb(bool start = true);
 
+    // Robot should be lined up and tilted after StartClimb was called and
+    //  IsReadyToTilt() returns true
     void DoneTilting(bool done = true);
+    bool IsReadyToTilt();
+
+    void PauseClimb(bool pause = true);
+
+    void ManualClimb(double left, double right);
 
     ClimberState GetClimberState();
 
@@ -42,12 +49,17 @@ private:
 
 	bool initialized;
     ClimberState CS;
-    UINT8 leftLiftPort, rightLiftPort, flopDownPort;
+    UINT8 leftLiftPort, rightLiftPort;
+    UINT32 deployerLeftPort, deployerRightPort;
     UINT32 leftEncPort, rightEncPort;
     CANJaguar leftLift, rightLift;
+    Solenoid deployerLeft, deployerRight;
     SettableCounter leftEnc, rightEnc;
 
+    Timer solenoidtimer;
+
     INT32 leftEncOffset, rightencOffset;
+    bool pause;
 };
 
 #endif

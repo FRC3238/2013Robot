@@ -10,7 +10,7 @@ public:
     // If you wish to add or remove any public methods, talk to Nick Papadakis
 
     // Constructor
-    Chassis(int inLeft, int inRight);
+    Chassis(int inLeft, int inRight, int inTilt);
     
     //Initialization
     bool Init();
@@ -42,6 +42,8 @@ public:
     
     void SetCoast();
 
+    void ManualTilt(float speed);
+
     // Turns off all motors controlled by this class
     void Disable();
 
@@ -53,6 +55,7 @@ private:
 	bool Initialized;
 	CANJaguar *LeftJag;
 	CANJaguar *RightJag;
+	CANJaguar *TiltJag;
 	RobotDrive *drivetrain;
 	Encoder *RightEncoder;
 	Encoder *LeftEncoder;
