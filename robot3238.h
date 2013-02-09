@@ -32,7 +32,7 @@ private:
     Joystick *shootJoystick;
 	DriverStation *DS;
 	DriverStationEnhancedIO &DSEIO;
-	SmartDashboard *smartdash;
+	//SmartDashboard *smartdash;
 	Preferences *robotpreferences;
 	DriverStationLCD *dsLCD;
 	Solenoid *LightSensorSolenoid;
