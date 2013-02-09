@@ -8,7 +8,7 @@ public:
     bool Set(bool in) {
         if (in != prevIn) {
             prevIn = in;
-            prevOut = !prevOut;
+            if (in) prevOut = !prevOut;
         }
         return prevOut;
     }
