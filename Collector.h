@@ -16,11 +16,13 @@ enum {
 	stepOpenFloor, 
 	stepCloseIris,
 	stepOpenIris,
+	stepWait,
 	stepModeEmpty,
 	stepModeLoaded,
 };
 
 const double IrisTime = 1.0;
+const double floorTime = 0.5;
 const float unlockRight =  0;
 const float unlockLeft =   1;
 const float lockRight =    1;
@@ -73,6 +75,7 @@ public:
     bool testFloorClosed();
     bool testFloorOpened();
     bool testHaveFrisbee();
+    string getState();
     
     
     void Disable();
@@ -101,6 +104,7 @@ public:
 	Servo *IrisServoLeft;
 	Servo *lipDrive;
 	Timer *IrisTimer;
+	Timer *floorTimer;
 	int state;
 };
 

@@ -27,6 +27,7 @@ void robot3238::DisabledInit(void) {
 
     theChassis->Init();
     theChassis->SetBrake();
+    theCollector->Disable();
 }
 
 void robot3238::AutonomousInit(void) {
@@ -38,6 +39,7 @@ void robot3238::AutonomousInit(void) {
 void robot3238::TeleopInit(void) {
 
     theChassis->Init();
+    theCollector->Init();
     //theCollector->start();
 }
 
@@ -96,21 +98,26 @@ void robot3238::TeleopPeriodic(void) {
         theShooter->Shoot();
     }
 
-    if (theCollector->testHaveFrisbee()) {
-        theCollector->testOpenIris();
-    }
-    else {
-        theCollector->testCloseIris();
-    }
+//    if (theCollector->testHaveFrisbee()) {
+//        theCollector->testOpenIris();
+//    }
+//    else {
+//        theCollector->testCloseIris();
+//    }
+//
+//    float colfloorval = driveJoystick->GetRawAxis(6);
+//    if(colfloorval > 0.5)
+//        theCollector->FloorDrive->Set(Relay::kForward);
+//    else if (colfloorval < -0.5)
+//        theCollector->FloorDrive->Set(Relay::kReverse);
+//    else
+//        theCollector->FloorDrive->Set(Relay::kOff);
 
-    float colfloorval = driveJoystick->GetRawAxis(6);
-    if(colfloorval > 0.5)
-        theCollector->FloorDrive->Set(Relay::kForward);
-    else if (colfloorval < -0.5)
-        theCollector->FloorDrive->Set(Relay::kReverse);
-    else
-        theCollector->FloorDrive->Set(Relay::kOff);
-
+    bool dropFrisbee = shootJoystick->GetRawButton(9);
+    if (dropFrisbee) theCollector->dropDisc();
+    bool collectorReInit = shootJoystick->GetRawButton(10);
+    if (collectorReInit) theCollector->Init();
+    theCollector->Idle();
     bool startShooter = shootJoystick->GetRawButton(3);
     bool stopShooter = shootJoystick->GetRawButton(4);
     if (startShooter) theShooter->StartShooter();
@@ -125,10 +132,13 @@ void robot3238::Periodic(void) {
     SmartDashboard::PutNumber("RightEncoderDistance", theChassis->GetRightEncoderDistance());
     SmartDashboard::PutNumber("LeftEncoderDistance", theChassis->GetLeftEncoderDistance());
     SmartDashboard::PutNumber("ShooterRPM", theShooter->GetRPM());
+    SmartDashboard::PutNumber("ShooterTilt", theShooter->GetAngle());
 
     SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->testFloorClosed());
     SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->testFloorOpened());
     SmartDashboard::PutBoolean("CollectorhaveFrisbee", theCollector->testHaveFrisbee());
+    
+    SmartDashboard::PutString("CollectorState", theCollector->getState());
 
 
     theChassis->Idle();

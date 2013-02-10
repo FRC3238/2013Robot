@@ -75,6 +75,9 @@ Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UIN
 	IrisServoLeft = new Servo(IrisServoLeftPort);
 	lipDrive = new Servo(LipServo);
 	IrisTimer = new Timer();
+	IrisTimer->Start();
+	floorTimer = new Timer();
+	floorTimer->Start();
 	state = limbo;
 }
 
@@ -146,13 +149,13 @@ void Collector::openFloor(){
 void Collector::openIris(){
 	IrisServoRight->Set(unlockRight);
 	IrisServoLeft->Set(unlockLeft);
-	IrisTimer->Start();
+	IrisTimer->Reset();
 }
 
 void Collector::closeIris(){
 	IrisServoRight->Set(lockRight);
 	IrisServoLeft->Set(lockLeft);
-	IrisTimer->Start();
+	IrisTimer->Reset();
 }
 
 void Collector::closeFloor(){
@@ -181,6 +184,7 @@ void Collector::dropDisc(){
 	if(state == loaded){
 		push(stepCloseIris);
 		push(stepOpenFloor);
+		push(stepWait);
 		push(stepCloseFloor);
 		push(stepOpenIris);
 		push(stepModeEmpty);
@@ -221,6 +225,10 @@ void Collector::startStep(){
 					openIris();
 					state = running;
 			break;
+			case stepWait:
+				floorTimer->Reset();
+				state = running;
+			break;
 			case stepModeEmpty:
 					state = isEmpty;
 					pop();
@@ -260,6 +268,12 @@ void Collector::checkStep(){
 					startStep();
 				}
 			break;
+			case stepWait :
+				if(floorTimer->HasPeriodPassed(floorTime)){
+					pop();
+					startStep();
+				}
+			break;
 			case stepModeEmpty:
 				state = isEmpty;
 				pop();
@@ -295,6 +309,31 @@ void Collector::Idle(){
 	break;
 	case running :
 		checkStep();
+	break;
+	}
+}
+
+string Collector::getState(){
+	switch(state){
+	
+	case limbo:
+		return "limbo";
+	break;
+	
+	case isEmpty:
+		return "isEmpty";
+	break;
+		
+	case loaded:
+		return "loaded";
+	break;
+	
+	case running:
+		return "running";
+	break;
+	
+	default:
+		return "confused";
 	break;
 	}
 }

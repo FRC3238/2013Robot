@@ -68,7 +68,7 @@ void Shooter::Shoot(){
 }
 
 float Shooter::GetAngle(){
-	float Angle = anglePot->GetAverageVoltage();
+	float Angle = anglePot->GetValue();
 	//Place mapper in this function
 	return Angle;
 }

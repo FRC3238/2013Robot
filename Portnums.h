@@ -58,7 +58,7 @@ const UINT32 LipServo = 4;
 
 // Analog Ports
 #if ROBOT == 'r'
-const UINT32 AnglePotPort = 7;
+const UINT32 AnglePotPort = 1;
 #endif
 
 // Solenoid Ports
