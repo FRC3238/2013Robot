@@ -14,21 +14,19 @@ enum {
 enum {
 	stepCloseFloor,
 	stepOpenFloor, 
-	stepCloseIris,
-	stepOpenIris,
+	stepCloseServoLock,
+	stepOpenServoLock,
 	stepWait,
 	stepModeEmpty,
 	stepModeLoaded,
 };
 
-const double IrisTime = 1.0;
+const double ServoLockTime = 1.0;
 const double floorTime = 0.5;
 const float unlockRight =  0;
 const float unlockLeft =   1;
 const float lockRight =    1;
 const float lockLeft =     0;
-const float lockLipVal =   0;
-const float unlockLipVal = 1;
 
 class QueueItem{
 public:
@@ -66,10 +64,8 @@ public:
     bool isFrisbeeReady();
     void dropDisc();
     
-    void testOpenIris();
-    void testCloseIris();
-    void testUnlockLip();
-    void testLockLip();
+    void testOpenServoLock();
+    void testCloseServoLock();;
     void testOpenFloor();
     void testCloseFloor();
     bool testFloorClosed();
@@ -87,8 +83,8 @@ public:
 	void unlockLip();
 	void lockLip();
 	void openFloor();
-	void openIris();
-	void closeIris();
+	void openServoLock();
+	void closeServoLock();
 	void shutoffFloor();
 	void closeFloor();
 	void checkStep();
@@ -100,10 +96,9 @@ public:
 	DigitalInput *BottomFloorOpenSwitch;
 	DigitalInput *BottomFloorCloseSwitch;
 	Relay *FloorDrive;
-	Servo *IrisServoRight;
-	Servo *IrisServoLeft;
-	Servo *lipDrive;
-	Timer *IrisTimer;
+	Servo *ServoLockRight;
+	Servo *ServoLockLeft;
+	Timer *ServoLockTimer;
 	Timer *floorTimer;
 	int state;
 };
