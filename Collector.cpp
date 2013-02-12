@@ -71,34 +71,23 @@ Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UIN
 	BottomFloorCloseSwitch = new DigitalInput(BotFloorCloseSwitch);
 	bucketStatusSwitch = new DigitalInput(bucketThingy); 
 	FloorDrive = new Relay(FloorMotorRelay);
-	IrisServoRight = new Servo(IrisServoRightPort);
-	IrisServoLeft = new Servo(IrisServoLeftPort);
-	lipDrive = new Servo(LipServo);
-	IrisTimer = new Timer();
-	IrisTimer->Start();
+	ServoLockRight = new Servo(IrisServoRightPort);
+	ServoLockLeft = new Servo(IrisServoLeftPort);
+	ServoLockTimer = new Timer();
+	ServoLockTimer->Start();
 	floorTimer = new Timer();
 	floorTimer->Start();
 	state = limbo;
 }
 
-void Collector::testOpenIris(){
+void Collector::testOpenServoLock(){
 		state = limbo;
-		openIris();
+		openServoLock();
 	}
 	
-void Collector::testCloseIris(){
+void Collector::testCloseServoLock(){
     	state = limbo;
-    	closeIris();
-    }
-    
-void Collector::testUnlockLip(){
-    	state = limbo;
-    	unlockLip();
-    }
-    
-void Collector::testLockLip(){
-    	state = limbo;
-    	lockLip();
+    	closeServoLock();
     }
     
 void Collector::testOpenFloor(){
@@ -134,28 +123,21 @@ void Collector::start() {
 	unlockLip();
 }
 
-void Collector::unlockLip(){
-	lipDrive->Set(unlockLipVal);
-}
-void Collector::lockLip(){
-	lipDrive->Set(lockLipVal);
-}
-
 void Collector::openFloor(){
 	if(!isFloorOpen()){
 	FloorDrive->Set(Relay::kForward);
 	}
 }
-void Collector::openIris(){
-	IrisServoRight->Set(unlockRight);
-	IrisServoLeft->Set(unlockLeft);
-	IrisTimer->Reset();
+void Collector::openServoLock(){
+	ServoLockRight->Set(unlockRight);
+	ServoLockLeft->Set(unlockLeft);
+	ServoLockTimer->Reset();
 }
 
-void Collector::closeIris(){
-	IrisServoRight->Set(lockRight);
-	IrisServoLeft->Set(lockLeft);
-	IrisTimer->Reset();
+void Collector::closeServoLock(){
+	ServoLockRight->Set(lockRight);
+	ServoLockLeft->Set(lockLeft);
+	ServoLockTimer->Reset();
 }
 
 void Collector::closeFloor(){
@@ -182,11 +164,11 @@ bool Collector::isFrisbeeReady(){
 
 void Collector::dropDisc(){
 	if(state == loaded){
-		push(stepCloseIris);
+		push(stepCloseServoLock);
 		push(stepOpenFloor);
 		push(stepWait);
 		push(stepCloseFloor);
-		push(stepOpenIris);
+		push(stepOpenServoLock);
 		push(stepModeEmpty);
 		startStep();
 		
@@ -195,7 +177,7 @@ void Collector::dropDisc(){
 
 void Collector::Init(){
 	push(stepCloseFloor);
-	push(stepOpenIris);
+	push(stepCloseServoLock);
 	push(stepModeEmpty);
 	startStep();
 }
@@ -217,12 +199,12 @@ void Collector::startStep(){
 					openFloor();
 					state = running;
 			break;
-			case stepCloseIris:
-					closeIris();
+			case stepCloseServoLock:
+					closeServoLock();
 					state = running;
 			break;
-			case stepOpenIris:
-					openIris();
+			case stepOpenServoLock:
+					openServoLock();
 					state = running;
 			break;
 			case stepWait:
@@ -256,14 +238,14 @@ void Collector::checkStep(){
 					startStep();
 				}
 			break;
-			case stepCloseIris:
-				if(IrisTimer->HasPeriodPassed(IrisTime)){
+			case stepCloseServoLock:
+				if(ServoLockTimer->HasPeriodPassed(ServoLockTime)){
 					pop();
 					startStep();
 				}
 			break;
-			case stepOpenIris:
-				if(IrisTimer->HasPeriodPassed(IrisTime)){
+			case stepOpenServoLock:
+				if(ServoLockTimer->HasPeriodPassed(ServoLockTime)){
 					pop();
 					startStep();
 				}
