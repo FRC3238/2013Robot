@@ -5,7 +5,7 @@ float totalSpoolUpTime = 2.0;
 float tiltStopDistance = 1.0;
 float tiltSpeed = 1.0;
 float servoPush = 0.10;
-float servoPull = 1.0;
+float servoPull = 0.27;
 float shootSpeedFactor = -1.0;
 
 Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
