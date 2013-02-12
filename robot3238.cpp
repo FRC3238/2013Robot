@@ -54,75 +54,64 @@ void robot3238::AutonomousPeriodic(void) {
     theChassis->SetBrake();
 }
 
+namespace TM {
+    enum TeleopMode {NORMAL, CLIMB_P, CLIMB_MAN, };
+}
+TM::TeleopMode teleopMode;
+
 void robot3238::TeleopPeriodic(void) {
     Periodic();
 
-    float forward;
-    float twist;
-    float throttle;
-    static Toggle joysticksAsClimberToggle;
-    if (joysticksAsClimberToggle.Set(driveJoystick->GetRawButton(12))) {
-        forward = twist = throttle = 0;
-        theClimber->ManualClimb(driveJoystick->GetRawAxis(2), shootJoystick->GetRawAxis(2));
-    } else {
-        forward  = - driveJoystick->GetRawAxis(2); //getting forward and backward value from movement joystick
-        twist    = - driveJoystick->GetRawAxis(3); //getting the turning(twist) value from movement joystick
-        throttle = -(driveJoystick->GetRawAxis(4)/2 - .5);
-    }
-    SmartDashboard::PutBoolean("Climb Mode", joysticksAsClimberToggle.Get());
-    bool invert = driveJoystick->GetRawButton(2);
-    theChassis->ArcadeDrive(forward, twist, throttle, invert);
-    if(driveJoystick->GetRawButton(7) == 1){
-        theChassis->ResetEncoders();
-    }
-    //static bool climbing = false;
-    //if (!climbing) {
-    //    if (driveJoystick->GetRawButton(8)){
-    //        theClimber->StartClimb();
-    //        climbing = true;
-    //    }
-    //} else if (theClimber->IsReadyToTilt() && driveJoystick->GetRawButton(9)) {
-    //    theClimber->DoneTilting();
-    //}
+    if (driveJoystick->GetRawButton(10)) teleopMode = TM::NORMAL;
+    else if (driveJoystick->GetRawButton(11)) teleopMode = TM::CLIMB_MAN;
+    else if (driveJoystick->GetRawButton(12)) teleopMode = TM::CLIMB_P;
 
-    float shootPwr = shootJoystick->GetRawAxis(2);
-    theShooter->ManualTilt(shootPwr);
+    float driveForward  = - driveJoystick->GetRawAxis(2);
+    float shootForward  = - shootJoystick->GetRawAxis(2);
+    float driveTwist    = - driveJoystick->GetRawAxis(3);
+    float driveThrottle = -(driveJoystick->GetRawAxis(4)/2 - .5);
+    float chassisForward = 0, chassisTwist = 0, chassisThrottle = 0;
+    float shootTiltPwr = shootForward;
+    switch (teleopMode) {
+    case TM::NORMAL:
+        if (driveJoystick->GetRawButton(2))
+            chassisThrottle = driveThrottle/2;
+        else chassisThrottle = driveThrottle;
+        chassisForward = driveForward;
+        chassisTwist = driveTwist;
+        theClimber->Disable();
 
-    //bool dropFrisbee = shootJoystick->GetRawButton(2);
-    //if (dropFrisbee) {
-    //    theCollector->dropDisc();
-    //}
-    
+        break;
+    case TM::CLIMB_P:
+        theClimber->ManualClimb(driveForward);
+        break;
+    case TM::CLIMB_MAN:
+        theClimber->ManualClimb(shootForward, driveForward);
+        shootTiltPwr = 0;
+        break;
+    }
+    bool chassisInvert = driveJoystick->GetRawButton(2);
+    theChassis->ArcadeDrive(chassisForward, chassisTwist, chassisThrottle, chassisInvert);
+    theShooter->ManualTilt(shootTiltPwr);
+
+    bool deployClimber = driveJoystick->GetRawButton(9);
+    theClimber->Deploy(deployClimber);
+
     bool shoot = shootJoystick->GetRawButton(1);
     if (shoot) {
         theShooter->Shoot();
     }
-
-//    if (theCollector->testHaveFrisbee()) {
-//        theCollector->testOpenIris();
-//    }
-//    else {
-//        theCollector->testCloseIris();
-//    }
-//
-//    float colfloorval = driveJoystick->GetRawAxis(6);
-//    if(colfloorval > 0.5)
-//        theCollector->FloorDrive->Set(Relay::kForward);
-//    else if (colfloorval < -0.5)
-//        theCollector->FloorDrive->Set(Relay::kReverse);
-//    else
-//        theCollector->FloorDrive->Set(Relay::kOff);
-
-    bool dropFrisbee = shootJoystick->GetRawButton(9);
+    bool dropFrisbee = shootJoystick->GetRawButton(2);
     if (dropFrisbee) theCollector->dropDisc();
-    bool collectorReInit = shootJoystick->GetRawButton(10);
+    bool collectorReInit = shootJoystick->GetRawButton(9);
     if (collectorReInit) theCollector->Init();
-    theCollector->Idle();
+
     bool startShooter = shootJoystick->GetRawButton(3);
     bool stopShooter = shootJoystick->GetRawButton(4);
     if (startShooter) theShooter->StartShooter();
     else if (stopShooter) theShooter->StopShooter();
-    theChassis->ManualTilt(shootJoystick->GetRawAxis(6));
+
+    theChassis->ManualTilt(driveJoystick->GetRawAxis(6));
 }
 
 // Put things that should be done periodically in any mode here
@@ -143,7 +132,7 @@ void robot3238::Periodic(void) {
 
     theChassis->Idle();
     theClimber->Idle();
-    //theCollector->Idle();
+    theCollector->Idle();
     theShooter->Idle();
     DriverStationLCD::GetInstance()->UpdateLCD();
 }

@@ -49,6 +49,24 @@ void Climber::ManualClimb(double left, double right) {
     rightLift.Set(right);
 }
 
+void Climber::ManualClimb(double spd) {
+    INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
+    double adj = syncP * (lEncD - rEncD);
+    if (spd > 0) {
+         leftLift.Set( leftMtrFactor*(spd - adj));
+        rightLift.Set(rightMtrFactor*(spd + adj));
+    }
+    else {
+         leftLift.Set( leftMtrFactor*(spd + adj));
+        rightLift.Set(rightMtrFactor*(spd - adj));
+    }
+}
+
+void Climber::Deploy(bool deploy) {
+    deployerLeft.Set(deploy);
+    deployerRight.Set(deploy);
+}
+
 void Climber::StartClimb(bool start) {
     // All work done in Idle()
     if (start && CS == DEACTIVATED) CS = SHOOTER_RAISED;
