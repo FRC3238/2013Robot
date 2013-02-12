@@ -66,19 +66,19 @@ void robot3238::TeleopPeriodic(void) {
     else if (driveJoystick->GetRawButton(11)) teleopMode = TM::CLIMB_MAN;
     else if (driveJoystick->GetRawButton(12)) teleopMode = TM::CLIMB_P;
 
-    float driveForward  = - driveJoystick->GetRawAxis(2);
-    float shootForward  = - shootJoystick->GetRawAxis(2);
-    float driveTwist    = - driveJoystick->GetRawAxis(3);
+    float driveForward  = driveJoystick->GetRawAxis(2);
+    float shootForward  = shootJoystick->GetRawAxis(2);
+    float driveTwist    = driveJoystick->GetRawAxis(3);
     float driveThrottle = -(driveJoystick->GetRawAxis(4)/2 - .5);
     float chassisForward = 0, chassisTwist = 0, chassisThrottle = 0;
     float shootTiltPwr = shootForward;
     switch (teleopMode) {
     case TM::NORMAL:
         if (driveJoystick->GetRawButton(2))
-            chassisThrottle = driveThrottle/2;
+             chassisThrottle = driveThrottle/2;
         else chassisThrottle = driveThrottle;
-        chassisForward = driveForward;
-        chassisTwist = driveTwist;
+        chassisForward = -driveForward;
+        chassisTwist = -driveTwist;
         theClimber->Disable();
 
         break;

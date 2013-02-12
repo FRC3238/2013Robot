@@ -16,9 +16,9 @@
  
 // Jaguar CAN IDs
 #if ROBOT == 'r'
-const UINT8 ShooterShooterMtr = 1;
+const UINT8 ShooterTiltMtr = 1;
 const UINT8 ChassisRightMtr = 2;
-const UINT8 ShooterTiltMtr = 3;
+const UINT8 ShooterShooterMtr = 3;
 const UINT8 ChassisTiltMtr = 4;
 const UINT8 ClimberLeftMtr = 5;
 const UINT8 ClimberRightMtr = 6;
