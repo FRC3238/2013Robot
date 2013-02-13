@@ -177,7 +177,7 @@ void Collector::dropDisc(){
 
 void Collector::Init(){
 	push(stepCloseFloor);
-	push(stepCloseServoLock);
+	push(stepOpenServoLock);
 	push(stepModeEmpty);
 	startStep();
 }
