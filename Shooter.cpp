@@ -4,9 +4,9 @@
 float totalSpoolUpTime = 2.0;
 float tiltStopDistance = 1.0;
 float tiltSpeed = 1.0;
-float servoPush = 0.10;
+float servoPush = 0.05;
 float servoPull = 0.32;
-float shootSpeedFactor = -1.0;
+float shootSpeedFactor = 1.0;
 
 Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
 	
@@ -32,12 +32,19 @@ bool Shooter::Init(){ //Resetting the timer used for spooling up the shooter
 void Shooter::StartShooter(){ //Look in idle for how the shooter actually spools up
 	spoolUpTimer->Start();
 	StartingShooter = true;
+    setSpeed = 1;
 }
 
 void Shooter::StopShooter(){
 	shootJag->Set(0);
 	spoolUpTimer->Reset();
 	StartingShooter = false;
+}
+
+void Shooter::RampUpToValue(float spd) {
+	spoolUpTimer->Start();
+	StartingShooter = true;
+    setSpeed = spd;
 }
 
 void Shooter::SetAngle(float desiredAngle){
@@ -86,13 +93,9 @@ void Shooter::Idle(){
 	double spoolUpTime = spoolUpTimer->Get(); //This is where the action happens for the shooter starting
 	double shootTime = shootTimer->Get();
 	if(StartingShooter){
-		if(spoolUpTime < totalSpoolUpTime){
-			shootJag->Set(shootSpeedFactor*(spoolUpTime/totalSpoolUpTime));
-		}
-		else{
-			spoolUpTimer->Stop();
-			shootJag->Set(shootSpeedFactor);
-		}
+        float spd = spoolUpTime/totalSpoolUpTime;
+        if (spd > setSpeed) spd = setSpeed;
+        shootJag->Set(shootSpeedFactor*spd);
 	}
 	if(shootTime > 0.5){ //The timing for the servo feeding frisbees into the shooter
 		shootServo->Set(servoPull);

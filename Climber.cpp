@@ -41,10 +41,15 @@ void Climber::ManualClimb(double spd) {
          leftLift.Set(spd - adj);
         rightLift.Set(spd + adj);
     }
-    else {
+    else if (spd < 0) {
          leftLift.Set(spd + adj);
         rightLift.Set(spd - adj);
     }
+    else {
+         leftLift.Set(0);
+        rightLift.Set(0);
+    }
+        
 }
 
 void Climber::Deploy(bool deploy) {

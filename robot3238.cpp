@@ -86,7 +86,8 @@ void robot3238::TeleopPeriodic(void) {
         theClimber->ManualClimb(driveForward);
         break;
     case TM::CLIMB_MAN:
-        theClimber->ManualClimb(shootForward, driveForward);
+        //theClimber->ManualClimb(shootForward, driveForward);
+        theClimber->ManualClimb(driveForward, driveForward);
         shootTiltPwr = 0;
         break;
     }
@@ -94,7 +95,7 @@ void robot3238::TeleopPeriodic(void) {
     theChassis->ArcadeDrive(chassisForward, chassisTwist, chassisThrottle, chassisInvert);
     theShooter->ManualTilt(shootTiltPwr);
 
-    bool deployClimber = driveJoystick->GetRawButton(9);
+    bool deployClimber = driveJoystick->GetRawButton(3);
     theClimber->Deploy(deployClimber);
 
     bool shoot = shootJoystick->GetRawButton(1);
@@ -106,6 +107,10 @@ void robot3238::TeleopPeriodic(void) {
     bool collectorReInit = shootJoystick->GetRawButton(9);
     if (collectorReInit) theCollector->Init();
 
+    if (!DS->GetDigitalIn(4)) theShooter->RampUpToValue(0.75);
+    else if (!DS->GetDigitalIn(6)) theShooter->RampUpToValue(0.875);
+    else if (!DS->GetDigitalIn(8)) theShooter->RampUpToValue(1);
+    else theShooter->RampUpToValue(0);
     bool startShooter = shootJoystick->GetRawButton(3);
     bool stopShooter = shootJoystick->GetRawButton(4);
     if (startShooter) theShooter->StartShooter();
@@ -128,6 +133,11 @@ void robot3238::Periodic(void) {
     SmartDashboard::PutBoolean("CollectorhaveFrisbee", theCollector->testHaveFrisbee());
     
     SmartDashboard::PutString("CollectorState", theCollector->getState());
+
+    static int numLoops;
+    SmartDashboard::PutNumber("Num Loops", numLoops++);
+
+    //SmartDashboard::PutNumber("DSEIO.GetButtons", DSEIO.GetButtons());
 
 
     theChassis->Idle();
