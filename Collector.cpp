@@ -320,4 +320,8 @@ string Collector::getState(){
 	}
 }
 
+void Collector::unlockLip() {
+    // NICK WHAT SHOULD THIS DO
+}
+
 	
