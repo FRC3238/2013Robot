@@ -4,7 +4,7 @@
 #include <WPILib.h>
 #include "Portnums.h"
 #include "Settings.h"
-#include "ShooterTach.h"
+#include "ShootTach.h"
 
 class Shooter {
 public:
@@ -65,7 +65,7 @@ private:
 	Servo *shootServo;
     DigitalInput *tachIn;
     float setSpeed;
-    ShooterTach *tach;
+    ShootTach *tach;
     PIDController *shooterPID;
 };
 
