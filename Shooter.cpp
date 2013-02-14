@@ -107,5 +107,5 @@ void Shooter::Idle(){
 float Shooter::GetRPM() {
     SmartDashboard::PutBoolean("Tach curVal", tachIn->Get());
     SmartDashboard::PutNumber("ShooterTachNum", tach->Get());
-    return 0.5/(tach->GetPeriod());
+    return 60/(tach->GetPeriod());
 }

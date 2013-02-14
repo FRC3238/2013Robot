@@ -7,6 +7,8 @@
 #include "Collector.h"
 #include "Shooter.h"
 #include "Toggle.h"
+#include "InsightLT_CPP/InsightLT.h"
+using namespace insight;
 
 class robot3238 : public IterativeRobot {
 
@@ -38,6 +40,10 @@ private:
 	Solenoid *LightSensorSolenoid;
 	DigitalInput *LightSensorDarkInput;
 	DigitalInput *LightSensorLightInput;
+
+    InsightLT insight;
+    IntegerData insight_shootRPM;
+    IntegerData insight_shootAngle;
 };
 
 #endif

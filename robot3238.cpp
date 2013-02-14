@@ -2,7 +2,7 @@
 #include "robot3238.h"
 #include "Settings.h"
 
-robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhancedIO()){
+robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhancedIO()), insight(FOUR_ZONES){
 	
     driveJoystick = new Joystick (DriveJoystickPort);
     shootJoystick = new Joystick (ShootJoystickPort);
@@ -18,6 +18,11 @@ void robot3238::RobotInit(void) {
     theChassis->Init();
     theClimber->Init();
     theShooter->Init();
+    insight_shootRPM.setHeader("RPM:");
+    insight_shootAngle.setHeader("Ang:");
+    insight.registerData(insight_shootRPM, 1);
+    insight.registerData(insight_shootAngle, 2);
+    insight.startDisplay();
 
     DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, __DATE__ " " __TIME__);
     printf("RobotInit() Completed\n");
@@ -125,8 +130,12 @@ void robot3238::Periodic(void) {
     SmartDashboard::PutNumber("LeftEncoderValue", theChassis->GetLeftEncoderValue());
     SmartDashboard::PutNumber("RightEncoderDistance", theChassis->GetRightEncoderDistance());
     SmartDashboard::PutNumber("LeftEncoderDistance", theChassis->GetLeftEncoderDistance());
-    SmartDashboard::PutNumber("ShooterRPM", theShooter->GetRPM());
-    SmartDashboard::PutNumber("ShooterTilt", theShooter->GetAngle());
+    int shootRPM = (int)theShooter->GetRPM();
+    SmartDashboard::PutNumber("ShooterRPM", shootRPM);
+    insight_shootRPM.setData(shootRPM);
+    int shootAngle = (int)theShooter->GetAngle();
+    SmartDashboard::PutNumber("ShooterTilt", shootAngle);
+    insight_shootAngle.setData(shootAngle);
 
     SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->testFloorClosed());
     SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->testFloorOpened());
