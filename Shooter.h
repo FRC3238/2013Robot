@@ -4,6 +4,7 @@
 #include <WPILib.h>
 #include "Portnums.h"
 #include "Settings.h"
+#include "PIDCounter.h"
 
 class Shooter {
 public:
@@ -24,6 +25,12 @@ public:
 
     // Uses the ramp-up code to a given value
     void RampUpToValue(float spd);
+    
+    //Uses PID to set the speed of the shooter
+    void SetSpeedPID(float speed);
+    
+    //Disables the shooter PID controller
+    void DisablePID();
     
     //Set the shooter to a specific angle
     void SetAngle(float desiredAngle);
@@ -57,9 +64,9 @@ private:
 	AnalogChannel *anglePot;
 	Servo *shootServo;
     DigitalInput *tachIn;
-    Counter *tach;
-
     float setSpeed;
+    PIDCounter *tach;
+    PIDController *shooterPID;
 };
 
 #endif

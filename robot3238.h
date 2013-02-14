@@ -40,7 +40,6 @@ private:
 	Solenoid *LightSensorSolenoid;
 	DigitalInput *LightSensorDarkInput;
 	DigitalInput *LightSensorLightInput;
-
     InsightLT insight;
     IntegerData insight_shootRPM;
     IntegerData insight_shootAngle;

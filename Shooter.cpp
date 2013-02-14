@@ -7,6 +7,9 @@ float tiltSpeed = 1.0;
 float servoPush = 0.05;
 float servoPull = 0.32;
 float shootSpeedFactor = 1.0;
+float PConst = 0.00002;
+float IConst = 0.0;
+float DConst = 0.0;
 
 Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
 	
@@ -18,7 +21,8 @@ Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
 	shootServo = new Servo(ShooterServoPort);
 	shootTimer = new Timer();
     tachIn = new DigitalInput(tachPortIn);
-    tach = new Counter(tachIn);
+    tach = new PIDCounter(tachIn);
+    shooterPID = new PIDController(PConst, IConst, DConst, tach, shootJag);
 }
 
 bool Shooter::Init(){ //Resetting the timer used for spooling up the shooter
@@ -45,6 +49,15 @@ void Shooter::RampUpToValue(float spd) {
 	spoolUpTimer->Start();
 	StartingShooter = true;
     setSpeed = spd;
+}
+
+void Shooter::SetSpeedPID(float speed){
+	shooterPID->Enable();
+	shooterPID->SetSetpoint(speed);
+}
+
+void Shooter::DisablePID(){
+	shooterPID->Disable();
 }
 
 void Shooter::SetAngle(float desiredAngle){
