@@ -21,7 +21,7 @@ Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
 	shootServo = new Servo(ShooterServoPort);
 	shootTimer = new Timer();
     tachIn = new DigitalInput(tachPortIn);
-    tach = new PIDCounter(tachIn);
+    tach = new ShooterTach(tachIn);
     shooterPID = new PIDController(PConst, IConst, DConst, tach, shootJag);
 }
 
