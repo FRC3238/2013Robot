@@ -101,7 +101,7 @@ void Shooter::Shoot(){
 }
 
 float Shooter::GetAngle(){
-	float Angle = anglePot->GetValue();
+	float Angle = anglePot->GetAverageValue();
 	//Place mapper in this function
 	return Angle;
 }
