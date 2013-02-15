@@ -102,7 +102,7 @@ void robot3238::TeleopPeriodic(void) {
     float driveTwist    = driveJoystick->GetRawAxis(3);
     float driveThrottle = -(driveJoystick->GetRawAxis(4)/2 - .5);
     float chassisForward = 0, chassisTwist = 0, chassisThrottle = 0;
-    float shootTiltPwr = -shootForward;
+    float shootTiltPwr = shootForward;
     switch (teleopMode) {
     case TM::NORMAL:
         if (driveJoystick->GetRawButton(2))
