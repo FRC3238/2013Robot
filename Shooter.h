@@ -26,6 +26,8 @@ public:
     // Uses the ramp-up code to a given value
     void RampUpToValue(float spd);
     
+    void SetRPM(float rpm);
+    
     //Uses PID to set the speed of the shooter
     void SetSpeedPID(float speed);
     
@@ -46,6 +48,16 @@ public:
 
     // Gets current speed of shooter
     float GetRPM();
+    
+    
+    //Checks if the shooter is up to speed
+    bool ShooterUpToSpeed();
+    
+    //Checks to see if the angles is set
+    bool IsAngleSet();
+    
+    //Checks to see if the shooter is done shooting a frisbee
+    bool DoneShooting();
 
     // Turns off all motors controlled by this class
     void Disable();
@@ -57,6 +69,11 @@ private:
     // Put useful functions and variables here
 	bool Initialized;
 	bool StartingShooter;
+    float setSpeed;
+    float desiredRPM;
+    float desiredAngle;
+    float currentAngle;
+    bool doneShooting;
 	CANJaguar *shootJag;
 	CANJaguar *tiltJag;
 	Timer *spoolUpTimer;
@@ -64,7 +81,6 @@ private:
 	AnalogChannel *anglePot;
 	Servo *shootServo;
     DigitalInput *tachIn;
-    float setSpeed;
     ShootTach *tach;
     PIDController *shooterPID;
 };

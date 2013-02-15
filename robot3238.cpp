@@ -38,7 +38,9 @@ void robot3238::DisabledInit(void) {
 void robot3238::AutonomousInit(void) {
 
     theChassis->Init();
+    theCollector->Init();
     theChassis->SetBrake();
+    AutonomousState = preparingToShoot;
 }
 
 void robot3238::TeleopInit(void) {
@@ -56,7 +58,31 @@ void robot3238::DisabledPeriodic(void)  {
 
 void robot3238::AutonomousPeriodic(void) {
     Periodic();
+    AutonomousAngle = Settings.getLong("AutonomousAngle", AutonomousAngle, true);
+    AutonomousRPM = Settings.getLong("AutonomousRPM", AutonomousRPM, true);
     theChassis->SetBrake();
+    theChassis->TankDrive(0, 0, 0);
+    theShooter->SetRPM(AutonomousRPM);
+    switch (AutonomousState){
+    
+    case preparingToShoot:
+    	if(theShooter->ShooterUpToSpeed() && theShooter->DoneShooting() && theCollector->isFrisbeeReady()){
+        	theCollector->dropDisc();
+    		AutonomousState = droppingDisc;
+    	}
+    break;
+    
+    case droppingDisc:
+    	if(theCollector->doneDropping()){
+    		AutonomousState = shooting;
+    	}
+    break;
+    
+    case shooting:
+    	theShooter->Shoot();
+    	AutonomousState = preparingToShoot;
+    break;
+    }
 }
 
 namespace TM {
@@ -76,7 +102,7 @@ void robot3238::TeleopPeriodic(void) {
     float driveTwist    = driveJoystick->GetRawAxis(3);
     float driveThrottle = -(driveJoystick->GetRawAxis(4)/2 - .5);
     float chassisForward = 0, chassisTwist = 0, chassisThrottle = 0;
-    float shootTiltPwr = shootForward;
+    float shootTiltPwr = -shootForward;
     switch (teleopMode) {
     case TM::NORMAL:
         if (driveJoystick->GetRawButton(2))
@@ -107,19 +133,23 @@ void robot3238::TeleopPeriodic(void) {
     if (shoot) {
         theShooter->Shoot();
     }
+    static TwoButtonToggle collectortoggle;
+    theCollector->manualMode(collectortoggle.Set(shootJoystick->GetRawButton(9), shootJoystick->GetRawButton(10)));
+    theCollector->manualFloorControl(shootJoystick->GetRawAxis(5));
     bool dropFrisbee = shootJoystick->GetRawButton(2);
     if (dropFrisbee) theCollector->dropDisc();
     bool collectorReInit = shootJoystick->GetRawButton(9);
     if (collectorReInit) theCollector->Init();
 
-    if (!DS->GetDigitalIn(4)) theShooter->RampUpToValue(0.75);
-    else if (!DS->GetDigitalIn(6)) theShooter->RampUpToValue(0.875);
-    else if (!DS->GetDigitalIn(8)) theShooter->RampUpToValue(1);
-    else theShooter->RampUpToValue(0);
-    bool startShooter = shootJoystick->GetRawButton(3);
-    bool stopShooter = shootJoystick->GetRawButton(4);
-    if (startShooter) theShooter->StartShooter();
-    else if (stopShooter) theShooter->StopShooter();
+//    SmartDashboard::PutBoolean("Ds digital 4", DS->GetDigitalIn(4));
+    if (!DS->GetDigitalIn(4))      theShooter->SetRPM(2500); //theShooter->RampUpToValue(0.75);
+    else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3000); //theShooter->RampUpToValue(0.875);
+    else if (!DS->GetDigitalIn(8)) theShooter->SetRPM(3300); //theShooter->RampUpToValue(1);
+    else                           theShooter->SetRPM(-1);    //theShooter->RampUpToValue(0);
+    
+//    static Toggle shootSpeedToggle;
+//    if(shootSpeedToggle.Set(shootJoystick->GetRawButton(7))) theShooter->SetRPM(3500);
+//    else theShooter->SetRPM(0);
 
     theChassis->ManualTilt(driveJoystick->GetRawAxis(6));
 }
@@ -145,6 +175,12 @@ void robot3238::Periodic(void) {
 
     static int numLoops;
     SmartDashboard::PutNumber("Num Loops", numLoops++);
+    
+    SmartDashboard::PutBoolean("ShooterUpToSpeed", theShooter->ShooterUpToSpeed());
+    SmartDashboard::PutBoolean("AngleSet", theShooter->IsAngleSet());
+    SmartDashboard::PutBoolean("DoneShooting", theShooter->DoneShooting());
+    SmartDashboard::PutBoolean("testHaveFrisbee", theCollector->testHaveFrisbee());
+    SmartDashboard::PutNumber("AutonomousState", (int)AutonomousState);
 
     //SmartDashboard::PutNumber("DSEIO.GetButtons", DSEIO.GetButtons());
 

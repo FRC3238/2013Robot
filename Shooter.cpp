@@ -1,15 +1,16 @@
 #include "Shooter.h"
 #include "Portnums.h"
+#include "Settings.h"
 #include <cmath> //So we can use an absolute value function
 float totalSpoolUpTime = 2.0;
-float tiltStopDistance = 1.0;
+float tiltStopDistance = 5.0;
 float tiltSpeed = 1.0;
 float servoPush = 0.05;
 float servoPull = 0.32;
 float shootSpeedFactor = 1.0;
-float PConst = 0.00002;
-float IConst = 0.0;
-float DConst = 0.0;
+double PConst = 1.0/3700.0;
+double IConst = 0.0;
+double DConst = 0.0;
 
 Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
 	
@@ -23,12 +24,15 @@ Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
     tachIn = new DigitalInput(tachPortIn);
     tach = new ShootTach(tachIn);
     shooterPID = new PIDController(PConst, IConst, DConst, tach, shootJag);
+    doneShooting = true;
 }
 
 bool Shooter::Init(){ //Resetting the timer used for spooling up the shooter
 	spoolUpTimer->Reset();
+	tach->SetMaxPeriod(0.05);
     tach->Start();
     tach->Reset();
+	shootServo->Set(servoPull);
 	Initialized = true;
 	return Initialized;
 }
@@ -60,22 +64,30 @@ void Shooter::DisablePID(){
 	shooterPID->Disable();
 }
 
-void Shooter::SetAngle(float desiredAngle){
+void Shooter::SetRPM(float rpm){
+	if (rpm > GetRPM()) shootJag->Set(1.0);
+	else shootJag->Set(0.0);
+	SmartDashboard::PutNumber("rpm", rpm);
+	desiredRPM = rpm;
+}
+
+void Shooter::SetAngle(float wantedAngle){
 	//Scale angles to match
 	float currentAngle = GetAngle();
 	float motorDirection;
-	if(desiredAngle < currentAngle){ //Finds which direction the tilt motor needs to run
+	if(wantedAngle < currentAngle){ //Finds which direction the tilt motor needs to run
 		motorDirection = -1.0;
 	}
 	else{
 		motorDirection = 1.0;
 	}
-	if(abs(desiredAngle - currentAngle) < tiltStopDistance){ //Determines when to stop the motor based on the "slop" value
+	if(abs(wantedAngle - currentAngle) < tiltStopDistance){ //Determines when to stop the motor based on the "slop" value
 		ManualTilt(0);
 	}
 	else{
 		ManualTilt(tiltSpeed*motorDirection);
 	}
+	desiredAngle = wantedAngle;
 }
 
 void Shooter::ManualTilt(float power){
@@ -84,7 +96,8 @@ void Shooter::ManualTilt(float power){
 
 void Shooter::Shoot(){
 	shootServo->Set(servoPush);
-	shootTimer->Start(); // Where's the state that says we're doing a shoot?
+	shootTimer->Start();
+	doneShooting = false;
 }
 
 float Shooter::GetAngle(){
@@ -108,17 +121,45 @@ void Shooter::Idle(){
 	if(StartingShooter){
         float spd = spoolUpTime/totalSpoolUpTime;
         if (spd > setSpeed) spd = setSpeed;
-        shootJag->Set(shootSpeedFactor*spd);
+        //shootJag->Set(shootSpeedFactor*spd);
 	}
 	if(shootTime > 0.5){ //The timing for the servo feeding frisbees into the shooter
 		shootServo->Set(servoPull);
 		shootTimer->Reset();
 		shootTimer->Stop();
+		doneShooting = true;
 	}
+	
+	PConst = Settings.getDouble("ShootP", PConst, true);
+	IConst = Settings.getDouble("ShootI", IConst, true);
+	DConst = Settings.getDouble("ShootD", DConst, true);
 }
 
 float Shooter::GetRPM() {
     SmartDashboard::PutBoolean("Tach curVal", tachIn->Get());
     SmartDashboard::PutNumber("ShooterTachNum", tach->Get());
     return 60/(tach->GetPeriod());
+}
+
+bool Shooter::ShooterUpToSpeed() {
+	if(abs(GetRPM() - desiredRPM) < 10){
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Shooter::IsAngleSet(){
+	currentAngle = GetAngle();
+	if(abs(desiredAngle - currentAngle) < tiltStopDistance){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool Shooter::DoneShooting(){
+	return doneShooting;
 }

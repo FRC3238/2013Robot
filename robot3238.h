@@ -7,6 +7,7 @@
 #include "Collector.h"
 #include "Shooter.h"
 #include "Toggle.h"
+#include "TwoButtonToggle.h"
 #include "InsightLT_CPP/InsightLT.h"
 using namespace insight;
 
@@ -43,6 +44,15 @@ private:
     InsightLT insight;
     IntegerData insight_shootRPM;
     IntegerData insight_shootAngle;
+    enum AutonomousState_t{
+    	preparingToShoot,
+    	droppingDisc,
+    	shooting,
+    };
+    
+    AutonomousState_t AutonomousState;
+    long AutonomousAngle;
+    long AutonomousRPM;
 };
 
 #endif

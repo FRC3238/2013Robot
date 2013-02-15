@@ -21,8 +21,8 @@ enum {
 	stepModeLoaded,
 };
 
-const double ServoLockTime = 1.0;
-const double floorTime = 0.5;
+const double ServoLockTime = 0.5;
+const double floorTime = 0.1;
 const float unlockRight =  0;
 const float unlockLeft =   1;
 const float lockRight =    1;
@@ -62,26 +62,27 @@ public:
     void Init();
     void start();
     bool isFrisbeeReady();
+    bool doneDropping();
     void dropDisc();
     
     void testOpenServoLock();
-    void testCloseServoLock();;
+    void testCloseServoLock();
     void testOpenFloor();
     void testCloseFloor();
     bool testFloorClosed();
     bool testFloorOpened();
     bool testHaveFrisbee();
     string getState();
+    void manualMode(bool mode);
+    void manualFloorControl(int direction);
     
     
     void Disable();
     
     void Idle();
 
-//private:
+private:
     // Put useful functions and variables here
-	void unlockLip();
-	void lockLip();
 	void openFloor();
 	void openServoLock();
 	void closeServoLock();
@@ -92,6 +93,7 @@ public:
 	bool isFloorClose();
 	bool isFloorOpen();
 	bool Initialized;
+	bool manual;
 	DigitalInput *bucketStatusSwitch; 
 	DigitalInput *BottomFloorOpenSwitch;
 	DigitalInput *BottomFloorCloseSwitch;

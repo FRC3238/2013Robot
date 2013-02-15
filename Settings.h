@@ -14,7 +14,7 @@ public:
     double getDouble(std::string key, double defaultVal = 0.0, bool printToDashboard = false);
 private:
     std::string settingsfilename;
-    std::ifstream settingsfile;
+    //std::ifstream settingsfile;
     std::map<std::string, long> longmap;
     std::map<std::string, double> doublemap;
 };

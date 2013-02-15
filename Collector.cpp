@@ -120,7 +120,6 @@ void Collector::start() {
 	if(state == limbo){
 		Init();
 	}
-	unlockLip();
 }
 
 void Collector::openFloor(){
@@ -292,6 +291,9 @@ void Collector::Idle(){
 	case running :
 		checkStep();
 	break;
+	default:
+		Init();
+	break;
 	}
 }
 
@@ -320,8 +322,46 @@ string Collector::getState(){
 	}
 }
 
-void Collector::unlockLip() {
-    // NICK WHAT SHOULD THIS DO
+bool Collector::doneDropping(){
+	switch(state){
+	
+	case limbo:
+		return true;
+	break;
+	
+	case isEmpty:
+		return true;
+	break;
+		
+	case loaded:
+		return true;
+	break;
+	
+	case running:
+		return false;
+	break;
+	
+	default:
+		return false;
+	break;
+	}
 }
 
-	
+void Collector::manualMode(bool mode){
+	if(mode) manual = true;
+	else manual = false;
+}
+
+void Collector::manualFloorControl(int direction){
+	if(manual){
+		if(direction == 0){
+		}
+		else if(direction < 0){
+			FloorDrive->Set(Relay::kReverse);
+		}
+		else if(direction > 0){
+			FloorDrive->Set(Relay::kForward);
+		}
+	else{}
+	}
+}
