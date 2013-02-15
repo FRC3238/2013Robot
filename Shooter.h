@@ -22,17 +22,9 @@ public:
     
     //Stops the shooter
     void StopShooter();
-
-    // Uses the ramp-up code to a given value
-    void RampUpToValue(float spd);
     
+    //Sets the shooter to a specific RPM
     void SetRPM(float rpm);
-    
-    //Uses PID to set the speed of the shooter
-    void SetSpeedPID(float speed);
-    
-    //Disables the shooter PID controller
-    void DisablePID();
     
     //Set the shooter to a specific angle
     void SetAngle(float desiredAngle);
@@ -44,11 +36,10 @@ public:
     void Shoot();
     
     //Gets the current angle of the shooter
-    float GetAngle();
+    int GetAngle();
 
     // Gets current speed of shooter
     float GetRPM();
-    
     
     //Checks if the shooter is up to speed
     bool ShooterUpToSpeed();
@@ -68,15 +59,12 @@ public:
 private:
     // Put useful functions and variables here
 	bool Initialized;
-	bool StartingShooter;
-    float setSpeed;
     float desiredRPM;
     float desiredAngle;
     float currentAngle;
     bool doneShooting;
 	CANJaguar *shootJag;
 	CANJaguar *tiltJag;
-	Timer *spoolUpTimer;
 	Timer *shootTimer;
 	AnalogChannel *anglePot;
 	Servo *shootServo;
