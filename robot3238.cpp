@@ -126,7 +126,7 @@ void robot3238::TeleopPeriodic(void) {
     theChassis->ArcadeDrive(chassisForward, chassisTwist, chassisThrottle, chassisInvert);
     theShooter->ManualTilt(shootTiltPwr);
 
-    bool deployClimber = driveJoystick->GetRawButton(3);
+    bool deployClimber = driveJoystick->GetRawButton(1);
     theClimber->Deploy(deployClimber);
 
     bool shoot = shootJoystick->GetRawButton(1);
