@@ -18,9 +18,11 @@ public:
     
     // Climbs manually keeping the sides in sync with a P loop
     void ManualClimb(double spd);
+    
     // Runs each motor with the given values
     void ManualClimb(double left, double right);
 
+    //Releases the solenoids to deploy the climber
     void Deploy(bool deploy);
 
     // Turns off all motors controlled by this class

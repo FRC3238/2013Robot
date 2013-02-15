@@ -2,25 +2,25 @@
 #include "Settings.h"
 
 Climber::Climber(UINT8 leftLiftIn, UINT8 rightLiftIn, UINT32 leftEncIn, UINT32 rightEncIn, UINT32 deployerLeftIn, UINT32 deployerRightIn) : 
-    leftLiftPort(leftLiftIn), rightLiftPort(rightLiftIn),
+    
+	leftLiftPort(leftLiftIn), rightLiftPort(rightLiftIn),
     deployerLeftPort(deployerLeftIn), deployerRightPort(deployerRightIn),
     leftEncPort(leftEncIn), rightEncPort(rightEncIn),
     leftLift(leftLiftPort), rightLift(rightLiftPort),
     deployerLeft(deployerLeftPort), deployerRight(deployerRightPort),
     leftEnc(leftEncPort), rightEnc(rightEncPort)
     {
-
     // Set initial values for tunables
     syncP = 0.05;
+    initialized = false;
 }
 
 bool Climber::Init() {
-    initialized = true;
-
-     leftEnc.Start();
+    leftEnc.Start();
     rightEnc.Start();
-     leftEnc.Reset();
+    leftEnc.Reset();
     rightEnc.Reset();
+    initialized = true;
     return initialized;
 }
 
@@ -48,8 +48,7 @@ void Climber::ManualClimb(double spd) {
     else {
          leftLift.Set(0);
         rightLift.Set(0);
-    }
-        
+    }     
 }
 
 void Climber::Deploy(bool deploy) {

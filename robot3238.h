@@ -23,7 +23,6 @@ public:
 	void AutonomousContinuous(void);
 	void TeleopInit(void);
 	void TeleopPeriodic(void);
-
     void Periodic(void);
 
 private:

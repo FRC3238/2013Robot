@@ -135,7 +135,7 @@ void robot3238::TeleopPeriodic(void) {
     }
     static TwoButtonToggle collectortoggle;
     theCollector->manualMode(collectortoggle.Set(shootJoystick->GetRawButton(9), shootJoystick->GetRawButton(10)));
-    theCollector->manualFloorControl(shootJoystick->GetRawAxis(5));
+    theCollector->manualFloorControl((int)shootJoystick->GetRawAxis(5));
     bool dropFrisbee = shootJoystick->GetRawButton(2);
     if (dropFrisbee) theCollector->dropDisc();
     bool collectorReInit = shootJoystick->GetRawButton(9);
@@ -156,10 +156,6 @@ void robot3238::TeleopPeriodic(void) {
 
 // Put things that should be done periodically in any mode here
 void robot3238::Periodic(void) {
-    SmartDashboard::PutNumber("RightEncoderValue", theChassis->GetRightEncoderValue());
-    SmartDashboard::PutNumber("LeftEncoderValue", theChassis->GetLeftEncoderValue());
-    SmartDashboard::PutNumber("RightEncoderDistance", theChassis->GetRightEncoderDistance());
-    SmartDashboard::PutNumber("LeftEncoderDistance", theChassis->GetLeftEncoderDistance());
     int shootRPM = (int)theShooter->GetRPM();
     SmartDashboard::PutNumber("ShooterRPM", shootRPM);
     insight_shootRPM.setData(shootRPM);
@@ -170,11 +166,7 @@ void robot3238::Periodic(void) {
     SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->testFloorClosed());
     SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->testFloorOpened());
     SmartDashboard::PutBoolean("CollectorhaveFrisbee", theCollector->testHaveFrisbee());
-    
     SmartDashboard::PutString("CollectorState", theCollector->getState());
-
-    static int numLoops;
-    SmartDashboard::PutNumber("Num Loops", numLoops++);
     
     SmartDashboard::PutBoolean("ShooterUpToSpeed", theShooter->ShooterUpToSpeed());
     SmartDashboard::PutBoolean("AngleSet", theShooter->IsAngleSet());
@@ -182,8 +174,10 @@ void robot3238::Periodic(void) {
     SmartDashboard::PutBoolean("testHaveFrisbee", theCollector->testHaveFrisbee());
     SmartDashboard::PutNumber("AutonomousState", (int)AutonomousState);
 
+    static int numLoops;
+    SmartDashboard::PutNumber("Num Loops", numLoops++);
+    
     //SmartDashboard::PutNumber("DSEIO.GetButtons", DSEIO.GetButtons());
-
 
     theChassis->Idle();
     theClimber->Idle();

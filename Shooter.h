@@ -50,11 +50,11 @@ public:
     //Checks to see if the shooter is done shooting a frisbee
     bool DoneShooting();
 
-    // Turns off all motors controlled by this class
-    void Disable();
-
     // Does general processing and should be called every 20ms
     void Idle();
+    
+    // Turns off all motors controlled by this class
+    void Disable();
 
 private:
     // Put useful functions and variables here
@@ -70,7 +70,6 @@ private:
 	Servo *shootServo;
     DigitalInput *tachIn;
     ShootTach *tach;
-    PIDController *shooterPID;
 };
 
 #endif

@@ -23,25 +23,13 @@ public:
     // Arguments: forward - Speed at which to move forward; -1 to 1. turn - Speed to turn; -1 to 1
     void ArcadeDrive(float forward, float turn, float throttle = 1, bool invert = false);
     
-    void SetSpeedTank(float leftSpeed, float rightSpeed);
-    
-    //Drives the chassis with two values: one distance for the left side and one distance for the right side
-    void MoveDistanceTank(float leftDistance, float rightDistance);
-    
-    int GetRightEncoderValue();
-    
-    int GetLeftEncoderValue();
-    
-    double GetRightEncoderDistance();
-    
-    double GetLeftEncoderDistance();
-
-    void ResetEncoders();
-    
+    //Sets Jaguars to brake mode so the motors provide resistance when Jaguars are set to 0
     void SetBrake();
     
+    //Sets Jaguars to coast mode so the motors don't provide resistance when the Jaguars are set to 0
     void SetCoast();
 
+    //Manually utilizes the lifter arm to tilt the chassis
     void ManualTilt(float speed);
 
     // Turns off all motors controlled by this class
@@ -57,10 +45,6 @@ private:
 	CANJaguar *RightJag;
 	CANJaguar *TiltJag;
 	RobotDrive *drivetrain;
-	Encoder *RightEncoder;
-	Encoder *LeftEncoder;
-//	PIDController *RightDistancePID;
-//	PIDController *LeftDistancePID;
 };
 
 #endif

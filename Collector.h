@@ -21,12 +21,13 @@ enum {
 	stepModeLoaded,
 };
 
+//Timings & lock values
 const double ServoLockTime = 0.5;
 const double floorTime = 0.1;
-const float unlockRight =  0;
-const float unlockLeft =   1;
-const float lockRight =    1;
-const float lockLeft =     0;
+const float unlockRight = 0;
+const float unlockLeft = 1;
+const float lockRight = 1;
+const float lockLeft = 0;
 
 class QueueItem{
 public:
@@ -59,12 +60,29 @@ public:
 
     // Constructor
     Collector(UINT32 BotFloorOpenSwitch, UINT32 BotFloorCloseSwitch, UINT32 bucketThingy);
+    
+    //Initializes
     void Init();
+    
+    //Starts the collector
     void start();
+    
+    //Checks for a frisbee
     bool isFrisbeeReady();
+    
+    //Checks to see if we're done dropping a disc
     bool doneDropping();
+    
+    //Drops a disc
     void dropDisc();
     
+    //Changes the floor control to manual mode
+    void manualMode(bool mode);
+    
+    //Manual control of the collector
+    void manualFloorControl(int direction);
+    
+    //Various test functions for debugging
     void testOpenServoLock();
     void testCloseServoLock();
     void testOpenFloor();
@@ -73,13 +91,12 @@ public:
     bool testFloorOpened();
     bool testHaveFrisbee();
     string getState();
-    void manualMode(bool mode);
-    void manualFloorControl(int direction);
-    
-    
-    void Disable();
-    
+
+    //General processing
     void Idle();
+    
+    //Shuts off motors, empties Queue
+    void Disable();
 
 private:
     // Put useful functions and variables here

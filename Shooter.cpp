@@ -39,7 +39,6 @@ void Shooter::SetRPM(float rpm){
 }
 
 void Shooter::SetAngle(float wantedAngle){
-	//Scale angles to match
 	float currentAngle = GetAngle();
 	float motorDirection;
 	if(wantedAngle < currentAngle){ //Finds which direction the tilt motor needs to run
@@ -72,25 +71,6 @@ int Shooter::GetAngle(){
 	return Angle;
 }
 
-void Shooter::Disable(){
-	StopShooter();
-}
-
-void Shooter::Idle(){
-    //Settings.Get
-    //float servoPush = 0.25;
-    //float servoPull = 0.80;
-	if (desiredRPM > GetRPM()) shootJag->Set(1.0);
-	else shootJag->Set(0.0);
-	double shootTime = shootTimer->Get();
-	if(shootTime > 0.5){ //The timing for the servo feeding frisbees into the shooter
-		shootServo->Set(servoPull);
-		shootTimer->Reset();
-		shootTimer->Stop();
-		doneShooting = true;
-	}
-}
-
 float Shooter::GetRPM() {
     SmartDashboard::PutBoolean("Tach curVal", tachIn->Get());
     SmartDashboard::PutNumber("ShooterTachNum", tach->Get());
@@ -118,4 +98,20 @@ bool Shooter::IsAngleSet(){
 
 bool Shooter::DoneShooting(){
 	return doneShooting;
+}
+
+void Shooter::Idle(){
+	if (desiredRPM > GetRPM()) shootJag->Set(1.0);
+	else shootJag->Set(0.0);
+	double shootTime = shootTimer->Get();
+	if(shootTime > 0.5){ //The timing for the servo feeding frisbees into the shooter
+		shootServo->Set(servoPull);
+		shootTimer->Reset();
+		shootTimer->Stop();
+		doneShooting = true;
+	}
+}
+
+void Shooter::Disable(){
+	StopShooter();
 }
