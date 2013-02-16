@@ -56,25 +56,23 @@ void Climber::Deploy(bool deploy) {
     deployerRight.Set(deploy);
 }
 
-void Climber::RaiseHooks(){
-	if (leftLift.GetForwardLimitOK()){
-		leftLift.Set(1);
-	}
-	else {
-		leftLift.Set(0);
-	}
-	if (rightLift.GetForwardLimitOK()){
-		rightLift.Set(1);
-	}
-	else {
-		rightLift.Set(0);
-	}
-}
-
 void Climber::Idle() {
 //    INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
 //    SmartDashboard::PutNumber("Climb_LeftEnc", lEncD);
 //    SmartDashboard::PutNumber("Climb_RightEnc", rEncD);
 
     syncP = Settings.getDouble("Climb_syncP", syncP, false);
+
+    if (raisingHooks) {
+        bool leftOK = leftLift.GetForwardLimitOK();
+        bool rightOK = rightLift.GetForwardLimitOK();
+        if (leftOK || rightOK) {
+            if (leftOK)  leftLift.Set(1);
+            else         leftLift.Set(0);
+
+            if (rightOK) rightLift.Set(1);
+            else         rightLift.Set(0);
+        }
+        else raisingHooks = false;
+    }
 }

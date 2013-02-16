@@ -26,7 +26,9 @@ public:
     void Deploy(bool deploy);
     
     //Raises the hooks all the way
-    void RaiseHooks();
+    void RaiseHooks() { raisingHooks = true; }
+    bool IsRaisingHooks() { return raisingHooks; }
+    void StopRaisingHooks() { raisingHooks = false; }
 
     // Turns off all motors controlled by this class
     void Disable();
@@ -44,6 +46,8 @@ private:
     CANJaguar leftLift, rightLift;
     Solenoid deployerLeft, deployerRight;
     Counter leftEnc, rightEnc;
+
+    bool raisingHooks;
 };
 
 #endif

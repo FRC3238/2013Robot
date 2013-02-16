@@ -99,8 +99,7 @@ void robot3238::TeleopPeriodic(void) {
     if (DS->GetDigitalIn(2)) teleopMode = TM::NORMAL;
     else teleopMode = TM::CLIMB;
 
-    static Toggle climberHookToggle;
-    if (climberHookToggle.Set(driveJoystick->GetRawButton(3))) theClimber->RaiseHooks();
+    if (driveJoystick->GetRawButton(3)) theClimber->RaiseHooks();
     
     float driveForward  = driveJoystick->GetRawAxis(2);
     float shootForward  = shootJoystick->GetRawAxis(2);
@@ -118,7 +117,7 @@ void robot3238::TeleopPeriodic(void) {
         theClimber->Disable();
         break;
     case TM::CLIMB:
-        theClimber->ManualClimb(driveForward);
+        if (!theClimber->IsRaisingHooks()) theClimber->ManualClimb(driveForward);
         break;
 //    case TM::CLIMB_MAN:
 //        //theClimber->ManualClimb(shootForward, driveForward);
