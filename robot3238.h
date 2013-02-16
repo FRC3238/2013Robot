@@ -25,6 +25,7 @@ public:
 	void TeleopPeriodic(void);
     void Periodic(void);
 
+    bool IsReadyToFire();
 private:
 	Chassis *theChassis;
     Climber *theClimber;
@@ -43,11 +44,16 @@ private:
     InsightLT insight;
     IntegerData insight_shootRPM;
     IntegerData insight_shootAngle;
+    Timer *dropTimer;
     enum AutonomousState_t{
     	preparingToShoot,
     	droppingDisc,
     	shooting,
     };
+    struct TM {
+        enum TeleopMode {NORMAL, CLIMB_P, CLIMB_MAN, };
+    };
+    TM::TeleopMode teleopMode;
     
     AutonomousState_t AutonomousState;
     long AutonomousAngle;

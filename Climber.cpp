@@ -58,8 +58,8 @@ void Climber::Deploy(bool deploy) {
 
 void Climber::Idle() {
     INT32 lEncD = leftEnc.Get(), rEncD = rightEnc.Get();
-    SmartDashboard::PutNumber("Climb_LeftEnc", lEncD);
-    SmartDashboard::PutNumber("Climb_RightEnc", rEncD);
+    //SmartDashboard::PutNumber("Climb_LeftEnc", lEncD);
+    //SmartDashboard::PutNumber("Climb_RightEnc", rEncD);
 
-    syncP = Settings.getDouble("Climb_syncP", syncP, true);
+    syncP = Settings.getDouble("Climb_syncP", syncP, false);
 }

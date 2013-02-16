@@ -1,71 +1,7 @@
 #include "Collector.h"
 #include "Portnums.h"
 
-QueueItem::QueueItem(int data){
-	next = NULL;
-	mData = data;
-}
-
-QueueItem::~QueueItem(){
-	
-}
-
-void QueueItem::AddItem(QueueItem* item){
-	if(next == NULL){
-		next = item;
-	}
-	else {
-		next->AddItem(item);
-	}
-}
-
-
-Queue::Queue(){
-	list = NULL;
-}
-
-void Queue::push(int data){
-	QueueItem* newItem;
-	
-	newItem = new QueueItem(data);
-	if(list == NULL){
-		list = newItem;
-	}
-	else{
-		list->AddItem(newItem);				
-	}
-}
-
-void Queue::pop(){
-	QueueItem* deathPointer;
-	
-	if(list != NULL){
-		deathPointer = list;
-		list = list->next;
-		delete(deathPointer);
-		}
-	}
-
-bool Queue::empty(){
-	return(list == NULL);
-}
-
-void Queue::dump(){
-	while(!empty()){
-		pop();
-	}
-}
-
-int Queue::top(){
-	if(list != NULL){
-		return list->mData;
-	}
-	else return 0;
-}
-
-
-
-Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UINT32  bucketThingy) :Queue()     {
+Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UINT32  bucketThingy) {
 	
 	BottomFloorOpenSwitch = new DigitalInput(BotFloorOpenSwitch);
 	BottomFloorCloseSwitch = new DigitalInput(BotFloorCloseSwitch);
@@ -73,66 +9,17 @@ Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UIN
 	FloorDrive = new Relay(FloorMotorRelay);
 	ServoLockRight = new Servo(IrisServoRightPort);
 	ServoLockLeft = new Servo(IrisServoLeftPort);
-	ServoLockTimer = new Timer();
-	ServoLockTimer->Start();
-	floorTimer = new Timer();
-	floorTimer->Start();
-	state = limbo;
+	AllPurposeTimer = new Timer();
+	AllPurposeTimer->Start();
 }
 
 void Collector::Init(){
-	push(stepCloseFloor);
-	push(stepOpenServoLock);
-	push(stepModeEmpty);
-	startStep();
-}
-
-void Collector::start() {
-	if(state == limbo){
-		Init();
-	}
-}
-
-bool Collector::isFrisbeeReady(){
-	return bucketStatusSwitch->Get(); 
-}
-
-void Collector::dropDisc(){
-	if(state == loaded){
-		push(stepCloseServoLock);
-		push(stepOpenFloor);
-		push(stepWait);
-		push(stepCloseFloor);
-		push(stepOpenServoLock);
-		push(stepModeEmpty);
-		startStep();
-		
-	}
+	CS = ST::READY;
+	lockingServos = closingFloor = openingFloor = false;
 }
 
 bool Collector::doneDropping(){
-	switch(state){
-	
-	case limbo:
-		return true;
-	break;
-	
-	case isEmpty:
-		return true;
-	break;
-		
-	case loaded:
-		return true;
-	break;
-	
-	case running:
-		return false;
-	break;
-	
-	default:
-		return false;
-	break;
-	}
+	return CS == ST::READY || CS == ST::FLOOR_CLOSE || CS == ST::SERVOS_UNLOCK;
 }
 
 void Collector::manualMode(bool mode){
@@ -141,237 +28,106 @@ void Collector::manualMode(bool mode){
 }
 
 void Collector::manualFloorControl(int direction){
-	if(manual){
-		if(direction == 0){
-		}
-		else if(direction < 0){
-			if(BottomFloorCloseSwitch->Get()){
-			}
-			else{
-				FloorDrive->Set(Relay::kReverse);
-			}
-		}
-		else if(direction > 0){
-			if(BottomFloorOpenSwitch->Get()){
-			}
-			else{
-			FloorDrive->Set(Relay::kForward);
-			}
-		}
-	else{}
+	if (manual) {
+		if (direction > 0)	openFloor();
+		else if (direction < 0) closeFloor();
+		else stopFloor();
 	}
 }
-
-void Collector::testOpenServoLock(){
-		state = limbo;
-		openServoLock();
-	}
-	
-void Collector::testCloseServoLock(){
-    	state = limbo;
-    	closeServoLock();
-    }
-    
-void Collector::testOpenFloor(){
-    	state = limbo;
-    	openFloor();
-    	while (!isFloorOpen());
-    	shutoffFloor();
-    }
-    
-void Collector::testCloseFloor(){
-    	state = limbo;
-    	closeFloor();
-    	while (!isFloorClose());
-    	shutoffFloor();
-    }
-    
-bool Collector::testFloorClosed(){
-    	return isFloorClose();
-    }
-    
-bool Collector::testFloorOpened(){
-    	return isFloorOpen();
-    }
-    
-bool Collector::testHaveFrisbee(){
-    	return isFrisbeeReady();
-    }
 
 string Collector::getState(){
-	switch(state){
+	switch(CS){
+	enum CollectorState { READY, SEVRVOS_LOCK, FLOOR_OPEN, FLOOR_WAIT, FLOOR_CLOSE, SERVOS_UNLOCK, };
+
 	
-	case limbo:
-		return "limbo";
-	break;
-	
-	case isEmpty:
-		return "isEmpty";
-	break;
-		
-	case loaded:
-		return "loaded";
-	break;
-	
-	case running:
-		return "running";
-	break;
-	
-	default:
-		return "confused";
-	break;
+	case ST::READY:			return "READY";	break;	
+	case ST::SERVOS_LOCK:	return "SERVOS_LOCK";	break;		
+	case ST::FLOOR_OPEN:	return "FLOOR_OPEN";	break;	
+	case ST::FLOOR_WAIT:	return "FLOOR_WAIT";	break;
+	case ST::FLOOR_CLOSE:	return "FLOOR_CLOSE";	break;
+	case ST::SERVOS_UNLOCK:	return "SERVOS_UNLOCK"; break;
+	default:				return "wat";			break;
 	}
 }
 
+void Collector::dropDisc(){
+	if (CS == ST::READY) {
+		CS = ST::SERVOS_LOCK;
+		AllPurposeTimer->Reset();
+	}
+}
+
+static const float servoUnlockTime = 0.2;
+static const float servoLockTime = 0.2;
+static const float floorWaitTime = 0.1;
+
 void Collector::Idle(){
-	switch(state){
-	case limbo :
-		
-	break;
-	case isEmpty :
-		if(isFrisbeeReady()){
-			state = loaded;
-			
+	switch (CS) {
+	case ST::READY:
+		break;
+	case ST::SERVOS_LOCK:
+		lockServos();
+		stopFloor();
+		if (AllPurposeTimer->HasPeriodPassed(servoLockTime)) {
+			CS = ST::FLOOR_OPEN;
 		}
-		
-	break;
-	case loaded :
-		if(!isFrisbeeReady()){
-			state = limbo;
+		break;
+	case ST::FLOOR_OPEN:
+		openFloor();
+		if (isFloorOpen()) {
+			CS = ST::FLOOR_WAIT;
+			AllPurposeTimer->Reset();
 		}
-		
-	break;
-	case running :
-		checkStep();
-	break;
-	default:
-		Init();
-	break;
+		break;
+	case ST::FLOOR_WAIT:
+		stopFloor();
+		if (AllPurposeTimer->HasPeriodPassed(floorWaitTime)) {
+			CS = ST::FLOOR_CLOSE;
+		}
+		break;
+	case ST::FLOOR_CLOSE:
+		closeFloor();
+		if (isFloorClosed()) {
+			CS = ST::SERVOS_UNLOCK;
+			AllPurposeTimer->Reset();
+		}
+		break;
+	case ST::SERVOS_UNLOCK:
+		unlockServos();
+		stopFloor();
+		if (AllPurposeTimer->HasPeriodPassed(servoUnlockTime)) {
+			CS = ST::READY;
+		}
+		break;
+	}
+	
+	if (lockingServos) {
+		ServoLockRight->Set(1);
+		ServoLockLeft->Set(0);
+	}
+	else {
+		ServoLockRight->Set(0);
+		ServoLockLeft->Set(1);
+	}
+	if (closingFloor) {
+		if (isFloorClosed()) {
+			FloorDrive->Set(Relay::kOff);
+			closingFloor = false;
+		}
+		else FloorDrive->Set(Relay::kReverse);
+	}
+	else if (openingFloor) {
+		if (BottomFloorOpenSwitch->Get()) {
+			openingFloor = false;
+			FloorDrive->Set(Relay::kOff);
+		}
+		else FloorDrive->Set(Relay::kForward);
+	}
+	else {
+		FloorDrive->Set(Relay::kOff);
 	}
 }
 
 void Collector::Disable(){
-	shutoffFloor();
-	dump();
-	state = limbo;		
-}
-
-//Private Functions
-void Collector::openFloor(){
-	if(!isFloorOpen()){
-	FloorDrive->Set(Relay::kForward);
-	}
-}
-void Collector::openServoLock(){
-	ServoLockRight->Set(unlockRight);
-	ServoLockLeft->Set(unlockLeft);
-	ServoLockTimer->Reset();
-}
-
-void Collector::closeServoLock(){
-	ServoLockRight->Set(lockRight);
-	ServoLockLeft->Set(lockLeft);
-	ServoLockTimer->Reset();
-}
-
-void Collector::shutoffFloor(){
-	FloorDrive->Set(Relay::kOff);
-}
-
-void Collector::closeFloor(){
-	if(!isFloorClose()){
-	FloorDrive->Set(Relay::kReverse);
-	}
-}
-
-void Collector::checkStep(){
-	switch(top()){
-			case  stepCloseFloor:
-				if(isFloorClose()){
-					shutoffFloor();
-					pop();
-					startStep();
-				}
-			break;
-			case stepOpenFloor:
-				if(isFloorOpen()){
-					shutoffFloor();
-					pop();
-					startStep();
-				}
-			break;
-			case stepCloseServoLock:
-				if(ServoLockTimer->HasPeriodPassed(ServoLockTime)){
-					pop();
-					startStep();
-				}
-			break;
-			case stepOpenServoLock:
-				if(ServoLockTimer->HasPeriodPassed(ServoLockTime)){
-					pop();
-					startStep();
-				}
-			break;
-			case stepWait :
-				if(floorTimer->HasPeriodPassed(floorTime)){
-					pop();
-					startStep();
-				}
-			break;
-			case stepModeEmpty:
-				state = isEmpty;
-				pop();
-				startStep();
-				
-			break;
-			case stepModeLoaded:
-				state = loaded;
-				pop();
-				startStep();
-				
-			break;
-			}
-}
-
-void Collector::startStep(){
-	if(!empty()){
-		switch(top()){
-			case  stepCloseFloor:
-					closeFloor();
-					state = running;
-			break;
-			case stepOpenFloor:
-					openFloor();
-					state = running;
-			break;
-			case stepCloseServoLock:
-					closeServoLock();
-					state = running;
-			break;
-			case stepOpenServoLock:
-					openServoLock();
-					state = running;
-			break;
-			case stepWait:
-				floorTimer->Reset();
-				state = running;
-			break;
-			case stepModeEmpty:
-					state = isEmpty;
-					pop();
-			break;
-			case stepModeLoaded:
-					state = loaded;
-					pop();
-			break;
-		}
-	}
-}
-
-bool Collector::isFloorClose(){
-	return BottomFloorCloseSwitch->Get();	 
-}
-
-bool Collector::isFloorOpen(){
-	return BottomFloorOpenSwitch->Get();
+	
 }

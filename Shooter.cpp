@@ -35,7 +35,7 @@ void Shooter::StopShooter(){
 }
 
 void Shooter::SetRPM(float rpm){
-	SmartDashboard::PutNumber("SetRPM", rpm);
+//	SmartDashboard::PutNumber("SetRPM", rpm);
 	desiredRPM = rpm;
 }
 
@@ -73,8 +73,8 @@ int Shooter::GetAngle(){
 }
 
 float Shooter::GetRPM() {
-    SmartDashboard::PutBoolean("Tach curVal", tachIn->Get());
-    SmartDashboard::PutNumber("ShooterTachNum", tach->Get());
+//    SmartDashboard::PutBoolean("Tach curVal", tachIn->Get());
+//    SmartDashboard::PutNumber("ShooterTachNum", tach->Get());
     return 60/(tach->GetPeriod());
 }
 
@@ -104,9 +104,9 @@ bool Shooter::DoneShooting(){
 void Shooter::Idle(){
 	if (desiredRPM > GetRPM()) shootJag->Set(1.0);
 	else shootJag->Set(0.0);
-	SmartDashboard::PutNumber("desiredRPMInIdle", desiredRPM);
-	SmartDashboard::PutNumber("GetRPMInIdle", GetRPM());
-	SmartDashboard::PutNumber("ShootJagSpeed", shootJag->Get());
+//	SmartDashboard::PutNumber("desiredRPMInIdle", desiredRPM);
+//	SmartDashboard::PutNumber("GetRPMInIdle", GetRPM());
+//	SmartDashboard::PutNumber("ShootJagSpeed", shootJag->Get());
 	double shootTime = shootTimer->Get();
 	if(shootTime > 0.5){ //The timing for the servo feeding frisbees into the shooter
 		shootServo->Set(servoPull);

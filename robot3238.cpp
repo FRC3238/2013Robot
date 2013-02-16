@@ -10,6 +10,7 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
     theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, ClimberDeployerLeftPort, ClimberDeployerRightPort);
     theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
     theShooter = new Shooter(ShooterShooterMtr, ShooterTiltMtr, ShooterTach);
+    dropTimer = new Timer();
 }
 	
 void robot3238::RobotInit(void) {
@@ -47,13 +48,17 @@ void robot3238::TeleopInit(void) {
 
     theChassis->Init();
     theCollector->Init();
-    //theCollector->start();
+    teleopMode = TM::NORMAL;
 }
 
 void robot3238::DisabledPeriodic(void)  {
     Periodic();
     Settings.rehash();
     theChassis->SetBrake();
+}
+
+bool robot3238::IsReadyToFire() {
+	return theShooter->ShooterUpToSpeed() && theShooter->DoneShooting() && theCollector->isFrisbeeReady();
 }
 
 void robot3238::AutonomousPeriodic(void) {
@@ -66,29 +71,27 @@ void robot3238::AutonomousPeriodic(void) {
     switch (AutonomousState){
     
     case preparingToShoot:
-    	if(theShooter->ShooterUpToSpeed() && theShooter->DoneShooting() && theCollector->isFrisbeeReady()){
+    	if(IsReadyToFire()) {
         	theCollector->dropDisc();
+        	dropTimer->Start();
     		AutonomousState = droppingDisc;
     	}
     break;
     
     case droppingDisc:
-    	if(theCollector->doneDropping()){
+    	if(theCollector->doneDropping() && dropTimer->Get() > 0.3){
     		AutonomousState = shooting;
     	}
     break;
     
     case shooting:
+    	dropTimer->Stop();
+    	dropTimer->Reset();
     	theShooter->Shoot();
     	AutonomousState = preparingToShoot;
     break;
     }
 }
-
-namespace TM {
-    enum TeleopMode {NORMAL, CLIMB_P, CLIMB_MAN, };
-}
-TM::TeleopMode teleopMode;
 
 void robot3238::TeleopPeriodic(void) {
     Periodic();
@@ -123,6 +126,8 @@ void robot3238::TeleopPeriodic(void) {
         break;
     }
     bool chassisInvert = driveJoystick->GetRawButton(2);
+    chassisForward -= shootJoystick->GetRawAxis(1);
+    chassisTwist   -= shootJoystick->GetRawAxis(3);
     theChassis->ArcadeDrive(chassisForward, chassisTwist, chassisThrottle, chassisInvert);
     theShooter->ManualTilt(shootTiltPwr);
 
@@ -142,10 +147,10 @@ void robot3238::TeleopPeriodic(void) {
     if (collectorReInit) theCollector->Init();
 
 //    SmartDashboard::PutBoolean("Ds digital 4", DS->GetDigitalIn(4));
-    if (!DS->GetDigitalIn(4))      theShooter->SetRPM(2500); //theShooter->RampUpToValue(0.75);
-    else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3000); //theShooter->RampUpToValue(0.875);
-    else if (!DS->GetDigitalIn(8)) theShooter->SetRPM(3300); //theShooter->RampUpToValue(1);
-    else                           theShooter->SetRPM(-1);    //theShooter->RampUpToValue(0);
+    if (!DS->GetDigitalIn(4))      theShooter->SetRPM(2800); //theShooter->RampUpToValue(0.75);
+    else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3375); //theShooter->RampUpToValue(0.875);
+    else if (!DS->GetDigitalIn(8)) theShooter->SetRPM(10000); //theShooter->RampUpToValue(1);
+    else                           theShooter->SetRPM(0);    //theShooter->RampUpToValue(0);
     
 //    static Toggle shootSpeedToggle;
 //    if(shootSpeedToggle.Set(shootJoystick->GetRawButton(7))) theShooter->SetRPM(3500);
@@ -163,21 +168,23 @@ void robot3238::Periodic(void) {
     SmartDashboard::PutNumber("ShooterTilt", shootAngle);
     insight_shootAngle.setData(shootAngle);
 
-    SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->testFloorClosed());
-    SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->testFloorOpened());
-    SmartDashboard::PutBoolean("CollectorhaveFrisbee", theCollector->testHaveFrisbee());
-    SmartDashboard::PutString("CollectorState", theCollector->getState());
+//    SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->isFloorClosed());
+//    SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->isFloorOpen());
+//    SmartDashboard::PutBoolean("CollectorhaveFrisbee", theCollector->isFrisbeeReady());
+//    SmartDashboard::PutBoolean("CollectorReadyToFire", theCollector->doneDropping());
+//    SmartDashboard::PutString("CollectorState", theCollector->getState());
     
-    SmartDashboard::PutBoolean("ShooterUpToSpeed", theShooter->ShooterUpToSpeed());
-    SmartDashboard::PutBoolean("AngleSet", theShooter->IsAngleSet());
-    SmartDashboard::PutBoolean("DoneShooting", theShooter->DoneShooting());
-    SmartDashboard::PutBoolean("testHaveFrisbee", theCollector->testHaveFrisbee());
-    SmartDashboard::PutNumber("AutonomousState", (int)AutonomousState);
+//    SmartDashboard::PutBoolean("ShooterUpToSpeed", theShooter->ShooterUpToSpeed());
+//    SmartDashboard::PutBoolean("AngleSet", theShooter->IsAngleSet());
+//    SmartDashboard::PutBoolean("DoneShooting", theShooter->DoneShooting());
+//    SmartDashboard::PutNumber("AutonomousState", (int)AutonomousState);
 
-    static int numLoops;
-    SmartDashboard::PutNumber("Num Loops", numLoops++);
+//    static int numLoops;
+//    SmartDashboard::PutNumber("Num Loops", numLoops++);
     
-    //SmartDashboard::PutNumber("DSEIO.GetButtons", DSEIO.GetButtons());
+//    SmartDashboard::PutNumber("DSEIO.GetButtons", DSEIO.GetButtons());
+    
+    SmartDashboard::PutBoolean("IsReadyToFire", IsReadyToFire());
 
     theChassis->Idle();
     theClimber->Idle();
