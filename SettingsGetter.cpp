@@ -8,7 +8,7 @@ SettingsGetter::SettingsGetter(std::string settingsfilenamein) :
 }
 
 void SettingsGetter::rehash() {
-    printf("Rehash() called. \n");
+   // printf("Rehash() called. \n");
     ifstream settingsfile(settingsfilename.c_str());
     settingsfile.sync();
     settingsfile.seekg(0, ios::beg);
@@ -19,13 +19,13 @@ void SettingsGetter::rehash() {
         // TODO: find errors in string to type conversion better
         if (type == "l" ||  type == "i") {
             long lval = atol(value.c_str());
-            printf("Found setting: key: `%s' type: long value: `%ld' from longmap; `%ld'\n", key.c_str(), lval, longmap[key]);
+            //printf("Found setting: key: `%s' type: long value: `%ld' from longmap; `%ld'\n", key.c_str(), lval, longmap[key]);
             longmap[key] = lval;
         }
         else if (type == "d" || type == "f") {
             double dval = atof(value.c_str());
             doublemap[key] = dval;
-            printf("Found setting: key: `%s' type: double value: `%f' from doublemap: `%f'\n", key.c_str(), dval, doublemap[key]);
+            //printf("Found setting: key: `%s' type: double value: `%f' from doublemap: `%f'\n", key.c_str(), dval, doublemap[key]);
         }
     }
 }

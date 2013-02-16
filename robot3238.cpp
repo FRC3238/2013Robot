@@ -134,11 +134,11 @@ void robot3238::TeleopPeriodic(void) {
         theShooter->Shoot();
     }
     static TwoButtonToggle collectortoggle;
-    theCollector->manualMode(collectortoggle.Set(shootJoystick->GetRawButton(9), shootJoystick->GetRawButton(10)));
+    theCollector->manualMode(collectortoggle.Set(shootJoystick->GetRawButton(11), shootJoystick->GetRawButton(12)));
     theCollector->manualFloorControl((int)shootJoystick->GetRawAxis(5));
     bool dropFrisbee = shootJoystick->GetRawButton(2);
     if (dropFrisbee) theCollector->dropDisc();
-    bool collectorReInit = shootJoystick->GetRawButton(9);
+    bool collectorReInit = shootJoystick->GetRawButton(3);
     if (collectorReInit) theCollector->Init();
 
 //    SmartDashboard::PutBoolean("Ds digital 4", DS->GetDigitalIn(4));

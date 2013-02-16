@@ -145,10 +145,18 @@ void Collector::manualFloorControl(int direction){
 		if(direction == 0){
 		}
 		else if(direction < 0){
-			FloorDrive->Set(Relay::kReverse);
+			if(BottomFloorCloseSwitch->Get()){
+			}
+			else{
+				FloorDrive->Set(Relay::kReverse);
+			}
 		}
 		else if(direction > 0){
+			if(BottomFloorOpenSwitch->Get()){
+			}
+			else{
 			FloorDrive->Set(Relay::kForward);
+			}
 		}
 	else{}
 	}
