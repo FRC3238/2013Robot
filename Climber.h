@@ -24,6 +24,9 @@ public:
 
     //Releases the solenoids to deploy the climber
     void Deploy(bool deploy);
+    
+    //Raises the hooks all the way
+    void RaiseHooks();
 
     // Turns off all motors controlled by this class
     void Disable();

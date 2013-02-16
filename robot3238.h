@@ -51,7 +51,7 @@ private:
     	shooting,
     };
     struct TM {
-        enum TeleopMode {NORMAL, CLIMB_P, CLIMB_MAN, };
+        enum TeleopMode {NORMAL, CLIMB,};
     };
     TM::TeleopMode teleopMode;
     

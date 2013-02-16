@@ -96,10 +96,12 @@ void robot3238::AutonomousPeriodic(void) {
 void robot3238::TeleopPeriodic(void) {
     Periodic();
 
-    if (driveJoystick->GetRawButton(10)) teleopMode = TM::NORMAL;
-    else if (driveJoystick->GetRawButton(11)) teleopMode = TM::CLIMB_MAN;
-    else if (driveJoystick->GetRawButton(12)) teleopMode = TM::CLIMB_P;
+    if (DS->GetDigitalIn(2)) teleopMode = TM::NORMAL;
+    else teleopMode = TM::CLIMB;
 
+    static Toggle climberHookToggle;
+    if (climberHookToggle.Set(driveJoystick->GetRawButton(3))) theClimber->RaiseHooks();
+    
     float driveForward  = driveJoystick->GetRawAxis(2);
     float shootForward  = shootJoystick->GetRawAxis(2);
     float driveTwist    = driveJoystick->GetRawAxis(3);
@@ -114,16 +116,15 @@ void robot3238::TeleopPeriodic(void) {
         chassisForward = -driveForward;
         chassisTwist = -driveTwist;
         theClimber->Disable();
-
         break;
-    case TM::CLIMB_P:
+    case TM::CLIMB:
         theClimber->ManualClimb(driveForward);
         break;
-    case TM::CLIMB_MAN:
-        //theClimber->ManualClimb(shootForward, driveForward);
-        theClimber->ManualClimb(driveForward, driveForward);
-        shootTiltPwr = 0;
-        break;
+//    case TM::CLIMB_MAN:
+//        //theClimber->ManualClimb(shootForward, driveForward);
+//        theClimber->ManualClimb(driveForward, driveForward);
+//        shootTiltPwr = 0;
+//        break;
     }
     bool chassisInvert = driveJoystick->GetRawButton(2);
     chassisForward -= shootJoystick->GetRawAxis(1);
