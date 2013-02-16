@@ -96,7 +96,7 @@ void robot3238::AutonomousPeriodic(void) {
 void robot3238::TeleopPeriodic(void) {
     Periodic();
 
-    if (DS->GetDigitalIn(2)) teleopMode = TM::NORMAL;
+    if (!DSEIO.GetDigital(2)) teleopMode = TM::NORMAL;
     else teleopMode = TM::CLIMB;
 
     if (driveJoystick->GetRawButton(3)) theClimber->RaiseHooks();
@@ -146,10 +146,9 @@ void robot3238::TeleopPeriodic(void) {
     bool collectorReInit = shootJoystick->GetRawButton(3);
     if (collectorReInit) theCollector->Init();
 
-//    SmartDashboard::PutBoolean("Ds digital 4", DS->GetDigitalIn(4));
-    if (!DS->GetDigitalIn(4))      theShooter->SetRPM(2800); //theShooter->RampUpToValue(0.75);
-    else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3375); //theShooter->RampUpToValue(0.875);
-    else if (!DS->GetDigitalIn(8)) theShooter->SetRPM(10000); //theShooter->RampUpToValue(1);
+         if (!DSEIO.GetDigital(4)) theShooter->SetRPM(2800); //theShooter->RampUpToValue(0.75);
+    else if (!DSEIO.GetDigital(6)) theShooter->SetRPM(3375); //theShooter->RampUpToValue(0.875);
+    else if (!DSEIO.GetDigital(8)) theShooter->SetRPM(10000); //theShooter->RampUpToValue(1);
     else                           theShooter->SetRPM(0);    //theShooter->RampUpToValue(0);
     
 //    static Toggle shootSpeedToggle;
