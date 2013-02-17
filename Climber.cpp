@@ -67,10 +67,10 @@ void Climber::Idle() {
         bool leftOK = leftLift.GetForwardLimitOK();
         bool rightOK = rightLift.GetForwardLimitOK();
         if (leftOK || rightOK) {
-            if (leftOK)  leftLift.Set(1);
+            if (leftOK)  leftLift.Set(-1);
             else         leftLift.Set(0);
 
-            if (rightOK) rightLift.Set(1);
+            if (rightOK) rightLift.Set(-1);
             else         rightLift.Set(0);
         }
         else raisingHooks = false;

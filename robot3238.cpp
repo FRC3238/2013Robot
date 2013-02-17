@@ -114,7 +114,7 @@ void robot3238::TeleopPeriodic(void) {
         else chassisThrottle = driveThrottle;
         chassisForward = -driveForward;
         chassisTwist = -driveTwist;
-        theClimber->Disable();
+        if (!theClimber->IsRaisingHooks()) theClimber->Disable();
         break;
     case TM::CLIMB:
         if (!theClimber->IsRaisingHooks()) theClimber->ManualClimb(driveForward);
