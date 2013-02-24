@@ -10,6 +10,7 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
     theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, ClimberDeployerLeftPort, ClimberDeployerRightPort);
     theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
     theShooter = new Shooter(ShooterShooterMtr, ShooterTiltMtr, ShooterTach);
+    theSwag = new Swag(SwagRed, SwagBlue);
     dropTimer = new Timer();
 }
 	
@@ -41,6 +42,7 @@ void robot3238::AutonomousInit(void) {
     theChassis->Init();
     theCollector->Init();
     theChassis->SetBrake();
+    dropTimer->Start();
     AutonomousState = preparingToShoot;
 }
 
@@ -73,20 +75,24 @@ void robot3238::AutonomousPeriodic(void) {
     case preparingToShoot:
     	if(IsReadyToFire()) {
         	theCollector->dropDisc();
-        	dropTimer->Start();
     		AutonomousState = droppingDisc;
     	}
     break;
     
     case droppingDisc:
-    	if(theCollector->doneDropping() && dropTimer->Get() > 0.3){
-    		AutonomousState = shooting;
+    	if(theCollector->doneDropping()){
+    		dropTimer->Reset();
+    		AutonomousState = settlingDisc;
     	}
     break;
     
+    case settlingDisc:
+    	if(dropTimer->Get() > 0.5){
+        	AutonomousState = shooting;
+    	}
+    	break;
+    
     case shooting:
-    	dropTimer->Stop();
-    	dropTimer->Reset();
     	theShooter->Shoot();
     	AutonomousState = preparingToShoot;
     break;
@@ -96,11 +102,12 @@ void robot3238::AutonomousPeriodic(void) {
 void robot3238::TeleopPeriodic(void) {
     Periodic();
 
-    if (DS->GetDigitalIn(2)) teleopMode = TM::NORMAL;
+    if (!DS->GetDigitalIn(2)) teleopMode = TM::NORMAL;
     else teleopMode = TM::CLIMB;
 
-    static Toggle climberHookToggle;
-    if (climberHookToggle.Set(driveJoystick->GetRawButton(3))) theClimber->RaiseHooks();
+//    static Toggle climberHookToggle;
+//    if (climberHookToggle.Set(driveJoystick->GetRawButton(3))) theClimber->RaiseHooks();
+    theClimber->RaiseHooks(driveJoystick->GetRawButton(3));
     
     float driveForward  = driveJoystick->GetRawAxis(2);
     float shootForward  = shootJoystick->GetRawAxis(2);
@@ -115,7 +122,6 @@ void robot3238::TeleopPeriodic(void) {
         else chassisThrottle = driveThrottle;
         chassisForward = -driveForward;
         chassisTwist = -driveTwist;
-        theClimber->Disable();
         break;
     case TM::CLIMB:
         theClimber->ManualClimb(driveForward);
@@ -149,7 +155,7 @@ void robot3238::TeleopPeriodic(void) {
 
 //    SmartDashboard::PutBoolean("Ds digital 4", DS->GetDigitalIn(4));
     if (!DS->GetDigitalIn(4))      theShooter->SetRPM(2800); //theShooter->RampUpToValue(0.75);
-    else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3375); //theShooter->RampUpToValue(0.875);
+    else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3300); //theShooter->RampUpToValue(0.875);
     else if (!DS->GetDigitalIn(8)) theShooter->SetRPM(10000); //theShooter->RampUpToValue(1);
     else                           theShooter->SetRPM(0);    //theShooter->RampUpToValue(0);
     
@@ -168,6 +174,10 @@ void robot3238::Periodic(void) {
     int shootAngle = (int)theShooter->GetAngle();
     SmartDashboard::PutNumber("ShooterTilt", shootAngle);
     insight_shootAngle.setData(shootAngle);
+    
+    static Toggle redSwagToggle, blueSwagToggle;
+    theSwag->Red(redSwagToggle.Set(shootJoystick->GetRawButton(7)));
+    theSwag->Blue(blueSwagToggle.Set(shootJoystick->GetRawButton(8)));
 
 //    SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->isFloorClosed());
 //    SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->isFloorOpen());

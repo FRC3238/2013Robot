@@ -26,6 +26,8 @@ bool Shooter::Init(){ //Resetting the timer used for spooling up the shooter;
     tach->Reset();
 	shootServo->Set(servoPull);
 	anglePot->SetAverageBits(8);
+	shootJag->SetSafetyEnabled(false);
+	tiltJag->SetSafetyEnabled(false);
 	Initialized = true;
 	return Initialized;
 }
@@ -79,7 +81,7 @@ float Shooter::GetRPM() {
 }
 
 bool Shooter::ShooterUpToSpeed() {
-	if(abs(GetRPM() - desiredRPM) < 10){
+	if(abs(GetRPM() - desiredRPM) < 5){
 		return true;
 	}
 	else {
