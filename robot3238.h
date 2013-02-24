@@ -6,6 +6,7 @@
 #include "Climber.h"
 #include "Collector.h"
 #include "Shooter.h"
+#include "Swag.h"
 #include "Toggle.h"
 #include "TwoButtonToggle.h"
 #include "InsightLT_CPP/InsightLT.h"
@@ -31,6 +32,7 @@ private:
     Climber *theClimber;
     Collector *theCollector;
     Shooter *theShooter;
+    Swag *theSwag;
 	Joystick *driveJoystick;
     Joystick *shootJoystick;
 	DriverStation *DS;
@@ -48,6 +50,7 @@ private:
     enum AutonomousState_t{
     	preparingToShoot,
     	droppingDisc,
+    	settlingDisc,
     	shooting,
     };
     struct TM {

@@ -21,12 +21,14 @@ public:
     
     // Runs each motor with the given values
     void ManualClimb(double left, double right);
+    
+//    void ArcadeClimb(double spd, )
 
     //Releases the solenoids to deploy the climber
     void Deploy(bool deploy);
     
     //Raises the hooks all the way
-    void RaiseHooks();
+    void RaiseHooks(bool move);
 
     // Turns off all motors controlled by this class
     void Disable();

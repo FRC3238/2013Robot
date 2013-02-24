@@ -13,6 +13,9 @@ Chassis::Chassis(int inLeft, int inRight, int inTilt) {
 
 	
 bool Chassis::Init() {
+	LeftJag->SetSafetyEnabled(false);
+	RightJag->SetSafetyEnabled(false);
+	TiltJag->SetSafetyEnabled(false);
 	Initialized = true;
 	return Initialized;
 }
