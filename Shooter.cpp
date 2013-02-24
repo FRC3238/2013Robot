@@ -102,7 +102,10 @@ bool Shooter::DoneShooting(){
 }
 
 void Shooter::Idle(){
-	if (desiredRPM > GetRPM()) shootJag->Set(1.0);
+    float curRPM = GetRPM();
+    // Don't go full power until it's somewhat up to speed to avoid
+    //  overcurrent faults
+	if (desiredRPM > RPM) shootJag->Set(curRPM < 1000? 0.75 : 1.0);
 	else shootJag->Set(0.0);
 //	SmartDashboard::PutNumber("desiredRPMInIdle", desiredRPM);
 //	SmartDashboard::PutNumber("GetRPMInIdle", GetRPM());
