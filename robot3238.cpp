@@ -15,6 +15,7 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
 }
 	
 void robot3238::RobotInit(void) {
+    printf("Adam's RobotInit");
     SmartDashboard::init();
 
     theChassis->Init();
@@ -31,6 +32,7 @@ void robot3238::RobotInit(void) {
 }
 
 void robot3238::DisabledInit(void) {
+    printf("Adam's DisabledInit");
 
     theChassis->Init();
     theChassis->SetBrake();
@@ -38,6 +40,7 @@ void robot3238::DisabledInit(void) {
 }
 
 void robot3238::AutonomousInit(void) {
+    printf("Adam's AutonomousInit");
 
     theChassis->Init();
     theCollector->Init();
@@ -47,6 +50,7 @@ void robot3238::AutonomousInit(void) {
 }
 
 void robot3238::TeleopInit(void) {
+    printf("Adam's TeleopInit");
 
     theChassis->Init();
     theCollector->Init();
@@ -54,6 +58,7 @@ void robot3238::TeleopInit(void) {
 }
 
 void robot3238::DisabledPeriodic(void)  {
+    printf("Adam's DisabledPeriodic");
     Periodic();
     Settings.rehash();
     theChassis->SetBrake();
@@ -64,6 +69,7 @@ bool robot3238::IsReadyToFire() {
 }
 
 void robot3238::AutonomousPeriodic(void) {
+    printf("Adam's AutonomousPeriodic");
     Periodic();
     AutonomousAngle = Settings.getLong("AutonomousAngle", AutonomousAngle, true);
     AutonomousRPM = Settings.getLong("AutonomousRPM", AutonomousRPM, true);
@@ -100,6 +106,7 @@ void robot3238::AutonomousPeriodic(void) {
 }
 
 void robot3238::TeleopPeriodic(void) {
+    printf("Adam's TeleopPeriodic");
     Periodic();
 
     if (!DS->GetDigitalIn(2)) teleopMode = TM::NORMAL;
@@ -168,6 +175,7 @@ void robot3238::TeleopPeriodic(void) {
 
 // Put things that should be done periodically in any mode here
 void robot3238::Periodic(void) {
+    printf("Adam's Periodic");
     int shootRPM = (int)theShooter->GetRPM();
     SmartDashboard::PutNumber("ShooterRPM", shootRPM);
     insight_shootRPM.setData(shootRPM);
@@ -202,9 +210,6 @@ void robot3238::Periodic(void) {
     theCollector->Idle();
     theShooter->Idle();
     DriverStationLCD::GetInstance()->UpdateLCD();
-}
-
-void robot3238::AutonomousContinuous(void){
 }
 
 START_ROBOT_CLASS(robot3238);
