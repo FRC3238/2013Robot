@@ -140,8 +140,16 @@ void robot3238::TeleopPeriodic(void) {
 //        break;
     }
     bool chassisInvert = driveJoystick->GetRawButton(2);
-    chassisForward -= shootJoystick->GetRawAxis(1);
-    chassisTwist   -= shootJoystick->GetRawAxis(3);
+    double ShootChassisForward = shootJoystick->GetRawAxis(1);
+    double ShootChassisTwist   = shootJoystick->GetRawAxis(1);
+    printf("Shoot Joystick in: f:%f,t:%f", ShootChassisForward, ShootChassisTwist);
+    if (ShootChassisForward >= 0) ShootChassisForward = max(ShootChassisForward-0.25,0) * 4.0/3.0;
+    else  ShootChassisForward = -max((-ShootChassisForward)-0.25,0) * 4.0/3.0;
+    if (ShootChassisTwist >= 0) ShootChassisTwist = max(ShootChassisTwist-0.25,0) * 4.0/3.0;
+    else  ShootChassisTwist = -max((-ShootChassisTwist)-0.25,0) * 4.0/3.0;
+    printf("Shoot Joystick out: f:%f,t:%f", ShootChassisForward, ShootChassisTwist);
+    chassisForward -= ShootChassisForward;
+    chassisTwist   -= ShootChassisTwist;
     theChassis->ArcadeDrive(chassisForward, chassisTwist, chassisThrottle, chassisInvert);
     theShooter->ManualTilt(shootTiltPwr);
 
