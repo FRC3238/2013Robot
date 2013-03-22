@@ -10,7 +10,7 @@ robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhan
     theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, ClimberDeployerLeftPort, ClimberDeployerRightPort);
     theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
     theShooter = new Shooter(ShooterShooterMtr, ShooterTiltMtr, ShooterTach);
-    theSwag = new Swag(SwagRed, SwagBlue);
+    theSwag = new Swag(1, SwagArduinoNum);
     dropTimer = new Timer();
 }
 	
@@ -150,14 +150,14 @@ void robot3238::TeleopPeriodic(void) {
     theClimber->Deploy(deployClimber);
 
     bool shoot = shootJoystick->GetRawButton(1);
-    if (shoot) {
-        theShooter->Shoot();
-    }
+    if (shoot) theShooter->Shoot();
+    theSwag->FireFrisbee(shoot);
     static TwoButtonToggle collectortoggle;
     theCollector->manualMode(collectortoggle.Set(shootJoystick->GetRawButton(11), shootJoystick->GetRawButton(12)));
     theCollector->manualFloorControl((int)shootJoystick->GetRawAxis(5));
     bool dropFrisbee = shootJoystick->GetRawButton(2);
     if (dropFrisbee) theCollector->dropDisc();
+    theSwag->DropFrisbee(dropFrisbee);
     bool collectorReInit = shootJoystick->GetRawButton(3);
     if (collectorReInit) theCollector->Init();
 
@@ -182,11 +182,9 @@ void robot3238::Periodic(void) {
     int shootAngle = (int)theShooter->GetAngle();
     SmartDashboard::PutNumber("ShooterTilt", shootAngle);
     insight_shootAngle.setData(shootAngle);
-    
-    static Toggle redSwagToggle, blueSwagToggle;
-    theSwag->Red(redSwagToggle.Set(shootJoystick->GetRawButton(7)));
-    theSwag->Blue(blueSwagToggle.Set(shootJoystick->GetRawButton(8)));
 
+    theSwag->HaveFrisbee(theCollector->isFrisbeeReady());
+    
 //    SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->isFloorClosed());
 //    SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->isFloorOpen());
 //    SmartDashboard::PutBoolean("CollectorhaveFrisbee", theCollector->isFrisbeeReady());

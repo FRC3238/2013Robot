@@ -54,6 +54,7 @@ const UINT32 LipServo = 4;
 
 // I2C Addresses
 #if ROBOT == 'r'
+const UINT32 SwagArduinoNum = 38;
 #endif
 
 // Analog Ports
@@ -65,8 +66,6 @@ const UINT32 AnglePotPort = 1;
 #if ROBOT == 'r'
 const UINT32 ClimberDeployerLeftPort = 1;
 const UINT32 ClimberDeployerRightPort = 2;
-const UINT32 SwagRed = 3;
-const UINT32 SwagBlue = 4;
 #endif
 
 // Operator Console Ports
