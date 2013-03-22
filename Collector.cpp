@@ -37,9 +37,6 @@ void Collector::manualFloorControl(int direction){
 
 string Collector::getState(){
 	switch(CS){
-	enum CollectorState { READY, SEVRVOS_LOCK, FLOOR_OPEN, FLOOR_WAIT, FLOOR_CLOSE, SERVOS_UNLOCK, };
-
-	
 	case ST::READY:			return "READY";	break;	
 	case ST::SERVOS_LOCK:	return "SERVOS_LOCK";	break;		
 	case ST::FLOOR_OPEN:	return "FLOOR_OPEN";	break;	
