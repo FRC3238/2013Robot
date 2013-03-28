@@ -1,7 +1,8 @@
 #include "Collector.h"
 #include "Portnums.h"
 
-Collector::Collector(UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UINT32  bucketThingy) {
+Collector::Collector(Swag* theSwagIn, UINT32 BotFloorOpenSwitch, UINT32  BotFloorCloseSwitch, UINT32  bucketThingy) {
+    theSwag = theSwagIn;
 	
 	BottomFloorOpenSwitch = new DigitalInput(BotFloorOpenSwitch);
 	BottomFloorCloseSwitch = new DigitalInput(BotFloorCloseSwitch);
@@ -51,6 +52,7 @@ void Collector::dropDisc(){
 	if (CS == ST::READY) {
 		CS = ST::SERVOS_LOCK;
 		AllPurposeTimer->Reset();
+        theSwag->DropFrisbee();
 	}
 }
 

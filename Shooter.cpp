@@ -7,7 +7,8 @@ float tiltSpeed = 1.0;
 float servoPush = 0.05;
 float servoPull = 0.32;
 
-Shooter::Shooter(int shootIn, int tiltIn, int tachPortIn){
+Shooter::Shooter(Swag* theSwagIn, int shootIn, int tiltIn, int tachPortIn){
+    theSwag = theSwagIn;
 	
 	Initialized = false;
 	shootJag = new CANJaguar(shootIn);
@@ -66,6 +67,7 @@ void Shooter::ManualTilt(float power){
 void Shooter::Shoot(){
 	shootServo->Set(servoPush);
 	shootTimer->Start();
+    theSwag->FireFrisbee();
 	doneShooting = false;
 }
 
@@ -75,18 +77,11 @@ int Shooter::GetAngle(){
 }
 
 float Shooter::GetRPM() {
-//    SmartDashboard::PutBoolean("Tach curVal", tachIn->Get());
-//    SmartDashboard::PutNumber("ShooterTachNum", tach->Get());
     return 60/(tach->GetPeriod());
 }
 
 bool Shooter::ShooterUpToSpeed() {
-	if(abs(GetRPM() - desiredRPM) < 5){
-		return true;
-	}
-	else {
-		return false;
-	}
+	 return abs(GetRPM() - desiredRPM) < 5;
 }
 
 bool Shooter::IsAngleSet(){

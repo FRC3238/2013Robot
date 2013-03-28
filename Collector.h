@@ -2,6 +2,7 @@
 #define COLLECTOR_H
 
 #include <WPILib.h>
+#include "Swag.h"
 
 class Collector {
 public:
@@ -9,7 +10,7 @@ public:
     // If you wish to add or remove any public methods, talk to Nick Papadakis
 
     // Constructor
-    Collector(UINT32 BotFloorOpenSwitch, UINT32 BotFloorCloseSwitch, UINT32 bucketThingy);
+    Collector(Swag* theSwagIn, UINT32 BotFloorOpenSwitch, UINT32 BotFloorCloseSwitch, UINT32 bucketThingy);
     
     //Initializes
     void Init();
@@ -63,6 +64,8 @@ private:
 	Timer *AllPurposeTimer;
 
 	bool lockingServos, closingFloor, openingFloor;
+
+    Swag* theSwag;
 };
 
 #endif

@@ -4,13 +4,13 @@
 
 robot3238::robot3238(void) : DS(DriverStation::GetInstance()),DSEIO(DS->GetEnhancedIO()), insight(FOUR_ZONES){
 	
+    theSwag = new Swag(1, SwagArduinoNum);
     driveJoystick = new Joystick (DriveJoystickPort);
     shootJoystick = new Joystick (ShootJoystickPort);
     theChassis = new Chassis(ChassisLeftMtr, ChassisRightMtr, ChassisTiltMtr);
     theClimber = new Climber(ClimberLeftMtr, ClimberRightMtr, ClimberLeftEncoder, ClimberRightEncoder, ClimberDeployerLeftPort, ClimberDeployerRightPort);
-    theCollector = new Collector(FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
-    theShooter = new Shooter(ShooterShooterMtr, ShooterTiltMtr, ShooterTach);
-    theSwag = new Swag(1, SwagArduinoNum);
+    theCollector = new Collector(theSwag, FloorOpenSwitchPort, FloorCloseSwitchPort, BucketSwitchPort);
+    theShooter = new Shooter(theSwag, ShooterShooterMtr, ShooterTiltMtr, ShooterTach);
     dropTimer = new Timer();
 }
 	
@@ -102,12 +102,19 @@ void robot3238::AutonomousPeriodic(void) {
 void robot3238::TeleopPeriodic(void) {
     Periodic();
 
+    static TM::TeleopMode lastMode = TM::NORMAL;
     if (!DS->GetDigitalIn(2)) teleopMode = TM::NORMAL;
     else teleopMode = TM::CLIMB;
+    //if (teleopMode == TM::CLIMB && lastMode != TM::CLIMB) {
+    if (teleopMode != lastMode) {
+        theSwag->StartClimb(teleopMode == TM::CLIMB);
+        lastMode = teleopMode;
+    }
+    if (driveJoystick->GetRawButton(4)) theSwag->DoneClimb();
+    if (driveJoystick->GetRawButton(12)) theSwag->ResetSwag();
 
-//    static Toggle climberHookToggle;
-//    if (climberHookToggle.Set(driveJoystick->GetRawButton(3))) theClimber->RaiseHooks();
-    theClimber->RaiseHooks(driveJoystick->GetRawButton(3));
+    bool raiseHooks = driveJoystick->GetRawButton(3);
+    theClimber->RaiseHooks(raiseHooks);
     
     float driveForward  = driveJoystick->GetRawAxis(2);
     float shootForward  = shootJoystick->GetRawAxis(6);
@@ -142,13 +149,11 @@ void robot3238::TeleopPeriodic(void) {
 
     bool shoot = shootJoystick->GetRawButton(1);
     if (shoot) theShooter->Shoot();
-    theSwag->FireFrisbee(shoot);
     static TwoButtonToggle collectortoggle;
     theCollector->manualMode(collectortoggle.Set(shootJoystick->GetRawButton(11), shootJoystick->GetRawButton(12)));
     theCollector->manualFloorControl((int)shootJoystick->GetRawAxis(5));
     bool dropFrisbee = shootJoystick->GetRawButton(2);
     if (dropFrisbee) theCollector->dropDisc();
-    theSwag->DropFrisbee(dropFrisbee);
     bool collectorReInit = shootJoystick->GetRawButton(3);
     if (collectorReInit) theCollector->Init();
 
@@ -174,7 +179,14 @@ void robot3238::Periodic(void) {
     SmartDashboard::PutNumber("ShooterTilt", shootAngle);
     insight_shootAngle.setData(shootAngle);
 
-    theSwag->HaveFrisbee(theCollector->isFrisbeeReady());
+    static bool hadFrisbeeReady = false;
+    bool haveFrisbeeReady = theCollector->isFrisbeeReady();
+    if (hadFrisbeeReady != haveFrisbeeReady) {
+        theSwag->HaveFrisbee(haveFrisbeeReady);
+        hadFrisbeeReady = haveFrisbeeReady;
+    }
+    SmartDashboard::PutBoolean("hadfrisbee", hadFrisbeeReady);
+    SmartDashboard::PutBoolean("havefrisbee", haveFrisbeeReady);
     
 //    SmartDashboard::PutBoolean("CollectorfloorClosed", theCollector->isFloorClosed());
 //    SmartDashboard::PutBoolean("CollectorfloorOpened", theCollector->isFloorOpen());

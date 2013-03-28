@@ -5,6 +5,7 @@
 #include "Portnums.h"
 #include "Settings.h"
 #include "ShootTach.h"
+#include "Swag.h"
 
 class Shooter {
 public:
@@ -12,7 +13,7 @@ public:
     // If you wish to add or remove any public methods, talk to Nick Papadakis
 
     // Constructor
-    Shooter(int shootIn, int tiltIn, int tachPortIn);
+    Shooter(Swag* theSwagIn, int shootIn, int tiltIn, int tachPortIn);
     
     //Initialization
     bool Init();
@@ -70,6 +71,7 @@ private:
 	Servo *shootServo;
     DigitalInput *tachIn;
     ShootTach *tach;
+    Swag* theSwag;
 };
 
 #endif
