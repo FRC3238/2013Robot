@@ -30,6 +30,8 @@ bool Shooter::Init(){ //Resetting the timer used for spooling up the shooter;
 	shootJag->SetSafetyEnabled(false);
 	tiltJag->SetSafetyEnabled(false);
 	Initialized = true;
+    controlSpeed = true;
+    manualSpeed = 0;
 	return Initialized;
 }
 
@@ -40,6 +42,12 @@ void Shooter::StopShooter(){
 void Shooter::SetRPM(float rpm){
 //	SmartDashboard::PutNumber("SetRPM", rpm);
 	desiredRPM = rpm;
+    controlSpeed = true;
+}
+
+void Shooter::SetManualSpeed(float spd){
+    controlSpeed = false;
+    manualSpeed = spd;
 }
 
 void Shooter::SetAngle(float wantedAngle){
@@ -102,8 +110,11 @@ void Shooter::Idle(){
     float curRPM = GetRPM();
     // Don't go full power until it's somewhat up to speed to avoid
     //  overcurrent faults
-	if (desiredRPM > curRPM) shootJag->Set(curRPM < 1000? 0.75 : 1.0);
-	else shootJag->Set(0.0);
+    if (controlSpeed) {
+        if (desiredRPM > curRPM) manualSpeed = curRPM < 1000? 0.75 : 1.0;
+        else manualSpeed = 0;
+    }
+    shootJag->Set(manualSpeed);
 //	SmartDashboard::PutNumber("desiredRPMInIdle", desiredRPM);
 //	SmartDashboard::PutNumber("GetRPMInIdle", GetRPM());
 //	SmartDashboard::PutNumber("ShootJagSpeed", shootJag->Get());

@@ -57,6 +57,7 @@ public:
     // Turns off all motors controlled by this class
     void Disable();
 
+    void SetManualSpeed(float spd);
 private:
     // Put useful functions and variables here
 	bool Initialized;
@@ -72,6 +73,9 @@ private:
     DigitalInput *tachIn;
     ShootTach *tach;
     Swag* theSwag;
+
+    bool controlSpeed;
+    float manualSpeed;
 };
 
 #endif
