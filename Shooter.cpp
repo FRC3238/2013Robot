@@ -40,6 +40,7 @@ void Shooter::StopShooter(){
 void Shooter::SetRPM(float rpm){
 //	SmartDashboard::PutNumber("SetRPM", rpm);
 	desiredRPM = rpm;
+	useBangBang = true;
 }
 
 void Shooter::SetAngle(float wantedAngle){
@@ -98,12 +99,23 @@ bool Shooter::DoneShooting(){
 	return doneShooting;
 }
 
+void Shooter::SetRawPower(float power){
+	useBangBang = false;
+	rawPower = power;
+	shootJag->Set(power);
+}
+
 void Shooter::Idle(){
     float curRPM = GetRPM();
-    // Don't go full power until it's somewhat up to speed to avoid
-    //  overcurrent faults
-	if (desiredRPM > curRPM) shootJag->Set(curRPM < 1000? 0.75 : 1.0);
-	else shootJag->Set(0.0);
+    if (useBangBang) {
+		// Don't go full power until it's somewhat up to speed to avoid
+		//  overcurrent faults
+		if (desiredRPM > curRPM) shootJag->Set(curRPM < 1000? 0.75 : 1.0);
+		else shootJag->Set(0.0);
+    }
+    else {
+    	shootJag->Set(rawPower);
+    }
 //	SmartDashboard::PutNumber("desiredRPMInIdle", desiredRPM);
 //	SmartDashboard::PutNumber("GetRPMInIdle", GetRPM());
 //	SmartDashboard::PutNumber("ShootJagSpeed", shootJag->Get());

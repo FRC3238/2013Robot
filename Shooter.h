@@ -50,6 +50,9 @@ public:
     
     //Checks to see if the shooter is done shooting a frisbee
     bool DoneShooting();
+    
+    //Sets the Jaguar of the shooter directly
+    void SetRawPower(float power);
 
     // Does general processing and should be called every 20ms
     void Idle();
@@ -72,6 +75,8 @@ private:
     DigitalInput *tachIn;
     ShootTach *tach;
     Swag* theSwag;
+    bool useBangBang;
+    float rawPower;
 };
 
 #endif
