@@ -30,8 +30,6 @@ bool Shooter::Init(){ //Resetting the timer used for spooling up the shooter;
 	shootJag->SetSafetyEnabled(false);
 	tiltJag->SetSafetyEnabled(false);
 	Initialized = true;
-    controlSpeed = true;
-    manualSpeed = 0;
 	return Initialized;
 }
 
@@ -42,17 +40,7 @@ void Shooter::StopShooter(){
 void Shooter::SetRPM(float rpm){
 //	SmartDashboard::PutNumber("SetRPM", rpm);
 	desiredRPM = rpm;
-<<<<<<< HEAD
 	useBangBang = true;
-||||||| merged common ancestors
-=======
-    controlSpeed = true;
-}
-
-void Shooter::SetManualSpeed(float spd){
-    controlSpeed = false;
-    manualSpeed = spd;
->>>>>>> e159e922308fc1d568ac5b3f5fad22d81b286086
 }
 
 void Shooter::SetAngle(float wantedAngle){
@@ -119,7 +107,6 @@ void Shooter::SetRawPower(float power){
 
 void Shooter::Idle(){
     float curRPM = GetRPM();
-<<<<<<< HEAD
     if (useBangBang) {
 		// Don't go full power until it's somewhat up to speed to avoid
 		//  overcurrent faults
@@ -129,20 +116,6 @@ void Shooter::Idle(){
     else {
     	shootJag->Set(rawPower);
     }
-||||||| merged common ancestors
-    // Don't go full power until it's somewhat up to speed to avoid
-    //  overcurrent faults
-	if (desiredRPM > curRPM) shootJag->Set(curRPM < 1000? 0.75 : 1.0);
-	else shootJag->Set(0.0);
-=======
-    // Don't go full power until it's somewhat up to speed to avoid
-    //  overcurrent faults
-    if (controlSpeed) {
-        if (desiredRPM > curRPM) manualSpeed = curRPM < 1000? 0.75 : 1.0;
-        else manualSpeed = 0;
-    }
-    shootJag->Set(manualSpeed);
->>>>>>> e159e922308fc1d568ac5b3f5fad22d81b286086
 //	SmartDashboard::PutNumber("desiredRPMInIdle", desiredRPM);
 //	SmartDashboard::PutNumber("GetRPMInIdle", GetRPM());
 //	SmartDashboard::PutNumber("ShootJagSpeed", shootJag->Get());
