@@ -59,7 +59,7 @@ public:
     
     // Turns off all motors controlled by this class
     void Disable();
-
+	
 private:
     // Put useful functions and variables here
 	bool Initialized;
