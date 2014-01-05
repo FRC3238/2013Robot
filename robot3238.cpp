@@ -158,6 +158,7 @@ void robot3238::TeleopPeriodic(void) {
     if (collectorReInit) theCollector->Init();
 
 //    SmartDashboard::PutBoolean("Ds digital 4", DS->GetDigitalIn(4));
+<<<<<<< HEAD
     if(shootJoystick->GetRawButton(7)){
     	theShooter->SetRawPower(-1.0);
     }
@@ -167,6 +168,24 @@ void robot3238::TeleopPeriodic(void) {
     	else if (!DS->GetDigitalIn(8)) theShooter->SetRPM(10000); //theShooter->RampUpToValue(1);
     	else                           theShooter->SetRPM(0);    //theShooter->RampUpToValue(0);
     }
+||||||| merged common ancestors
+    if (!DS->GetDigitalIn(4))      theShooter->SetRPM(2800); //theShooter->RampUpToValue(0.75);
+    else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3300); //theShooter->RampUpToValue(0.875);
+    else if (!DS->GetDigitalIn(8)) theShooter->SetRPM(10000); //theShooter->RampUpToValue(1);
+    else                           theShooter->SetRPM(0);    //theShooter->RampUpToValue(0);
+    
+=======
+    //if (!DS->GetDigitalIn(4))      theShooter->SetRPM(2800); //theShooter->RampUpToValue(0.75);
+    //else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3300); //theShooter->RampUpToValue(0.875);
+    //else if (!DS->GetDigitalIn(8)) theShooter->SetRPM(10000); //theShooter->RampUpToValue(1);
+    //else                           theShooter->SetRPM(0);    //theShooter->RampUpToValue(0);
+
+    if (!DS->GetDigitalIn(4))      theShooter->SetManualSpeed(0.25);
+    else if (!DS->GetDigitalIn(6)) theShooter->SetRPM(3300);
+    else if (!DS->GetDigitalIn(8)) theShooter->SetManualSpeed(1.0);
+    else                           theShooter->SetManualSpeed(0.0);
+    
+>>>>>>> e159e922308fc1d568ac5b3f5fad22d81b286086
 //    static Toggle shootSpeedToggle;
 //    if(shootSpeedToggle.Set(shootJoystick->GetRawButton(7))) theShooter->SetRPM(3500);
 //    else theShooter->SetRPM(0);

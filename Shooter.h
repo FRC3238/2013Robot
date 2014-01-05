@@ -59,7 +59,14 @@ public:
     
     // Turns off all motors controlled by this class
     void Disable();
+<<<<<<< HEAD
 	
+||||||| merged common ancestors
+
+=======
+
+    void SetManualSpeed(float spd);
+>>>>>>> e159e922308fc1d568ac5b3f5fad22d81b286086
 private:
     // Put useful functions and variables here
 	bool Initialized;
@@ -75,8 +82,15 @@ private:
     DigitalInput *tachIn;
     ShootTach *tach;
     Swag* theSwag;
+<<<<<<< HEAD
     bool useBangBang;
     float rawPower;
+||||||| merged common ancestors
+=======
+
+    bool controlSpeed;
+    float manualSpeed;
+>>>>>>> e159e922308fc1d568ac5b3f5fad22d81b286086
 };
 
 #endif
