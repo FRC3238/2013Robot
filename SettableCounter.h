@@ -20,7 +20,7 @@ public:
 	SettableCounter(EncodingType encodingType, DigitalSource *upSource, DigitalSource *downSource, bool inverted) : Counter(encodingType, upSource, downSource, inverted), offset(0) {}
 	virtual ~SettableCounter() {}
 
-    INT32 Get() {
+    int32_t Get() {
         return Counter::Get() - offset;
     }
     void Set(INT32 curVal) {

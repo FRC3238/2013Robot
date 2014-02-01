@@ -24,9 +24,8 @@ public:
 	void AutonomousContinuous(void);
 	void TeleopInit(void);
 	void TeleopPeriodic(void);
-    void Periodic(void);
-
-    bool IsReadyToFire();
+	void Periodic(void);
+	bool IsReadyToFire();
 private:
 	Chassis *theChassis;
     Climber *theClimber;
